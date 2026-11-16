@@ -912,12 +912,18 @@
                     <!-- 模式 A：互動木柱點選盤 -->
                     <div id="panelModePins" class="space-y-4">
                         <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
-                            <span>請點選倒下的 <strong>1～12 號木柱</strong>（可多選），系統自動依官方規則計算得分：</span>
+                            <span>請點選倒下的 <strong>1～12 號木柱</strong>（依官方四排三角形陣型排列，可多選），系統自動計算得分：</span>
                             <button type="button" onclick="clearSelectedPins()" class="text-rose-600 font-bold hover:underline">清除已選木柱</button>
                         </div>
 
-                        <div id="interactivePinGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-3 py-2 justify-items-center">
-                            <!-- 由 JS 生成 1-12 號木柱 -->
+                        <div class="bg-gradient-to-b from-forest-50 to-birch-50 rounded-2xl p-4 sm:p-5 border-2 border-forest-600/20 space-y-2.5 text-center">
+                            <div class="text-[11px] font-bold text-slate-500">▲ 遠端後排（7-9-8）</div>
+                            <div id="interactivePinGrid" class="space-y-2.5 py-1">
+                                <!-- 由 JS 依官方四排三角形陣型生成 1-12 號木柱 -->
+                            </div>
+                            <div class="pt-1.5 border-t border-dashed border-forest-600/30 text-[11px] font-black text-vitalorange-700">
+                                ▼ 投擲起點線方向（最近排 1-2）
+                            </div>
                         </div>
 
                         <!-- 即時試算確認區 -->
@@ -1902,17 +1908,27 @@
 
         function renderInteractivePinGrid() {
             const container = document.getElementById('interactivePinGrid');
-            let html = '';
-            for (let n = 1; n <= 12; n++) {
-                const isSelected = appState.selectedPins.includes(n);
-                html += `
-                    <button type="button" onclick="togglePinSelection(${n})"
-                        class="molkky-pin ${isSelected ? 'selected' : ''} w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 flex items-center justify-center font-mono-num">
-                        ${n}
-                    </button>
-                `;
-            }
-            container.innerHTML = html;
+            // 依據香港芬蘭木柱發展協會 (HKMDA) 2023 官方規則標準四排三角形起始陣型（由遠至近）
+            const formationRows = [
+                [7, 9, 8],
+                [5, 11, 12, 6],
+                [3, 10, 4],
+                [1, 2]
+            ];
+
+            container.innerHTML = formationRows.map(row => `
+                <div class="flex justify-center gap-2.5 sm:gap-3.5">
+                    ${row.map(n => {
+                        const isSelected = appState.selectedPins.includes(n);
+                        return `
+                            <button type="button" onclick="togglePinSelection(${n})"
+                                class="molkky-pin ${isSelected ? 'selected' : ''} w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 flex items-center justify-center font-mono-num">
+                                ${n}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `).join('');
             updatePinPreviewBox();
         }
 
