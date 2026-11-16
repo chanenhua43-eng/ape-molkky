@@ -11,24 +11,24 @@
                 extend: {
                     colors: {
                         birch: {
-                            50: '#FDFBF7',
-                            100: '#F5EFE6',
-                            200: '#EBE0D0',
-                            300: '#DCCAB0',
-                            400: '#C8AD88'
+                            50: '#FAF7F2',
+                            100: '#F2ECE1',
+                            200: '#E7DEC9',
+                            300: '#D9A76A',
+                            400: '#C48E4D'
                         },
                         forest: {
-                            50: '#EDF5F0',
-                            100: '#D4E7DC',
-                            600: '#2D6A4F',
-                            700: '#23533D',
-                            800: '#1B4332',
-                            900: '#122E22'
+                            50: '#EEF4F0',
+                            100: '#D5E4DB',
+                            600: '#2D5A43',
+                            700: '#244936',
+                            800: '#1E3F2E',
+                            900: '#142B1F'
                         },
-                        amberwood: {
-                            500: '#F59E0B',
-                            600: '#D97706',
-                            700: '#B45309'
+                        vitalorange: {
+                            500: '#EA7C4D',
+                            600: '#E06D3B',
+                            700: '#C55A2B'
                         }
                     }
                 }
@@ -36,16 +36,37 @@
         };
     </script>
     <style>
-        /* 基礎字體與平滑捲動設定（不依賴外部 Google Fonts 以避免預覽環境封鎖） */
+        /* 系統圓潤無襯線字體與等寬數字設定 */
         html {
             scroll-behavior: smooth;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
         }
 
         body {
-            background-color: #FDFBF7;
+            background-color: #FAF7F2;
             color: #1E293B;
             transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .font-mono-num {
+            font-variant-numeric: tabular-nums;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+
+        /* 分頁淡入切換動畫 */
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-panel-animate {
+            animation: tabFadeIn 0.28s ease-out forwards;
         }
 
         /* 大字體無障礙模式 */
@@ -70,6 +91,7 @@
 
         body.a11y-high-contrast .text-forest-800,
         body.a11y-high-contrast .text-forest-700,
+        body.a11y-high-contrast .text-forest-600,
         body.a11y-high-contrast .text-forest-900,
         body.a11y-high-contrast .text-slate-600,
         body.a11y-high-contrast .text-slate-700,
@@ -86,11 +108,11 @@
             border-color: #FACC15 !important;
         }
 
-        /* 樺木柱立體按鈕樣式 */
+        /* 北歐樺木柱立體視覺按鈕 */
         .molkky-pin {
-            background: radial-gradient(circle at 32% 28%, #FFFDF9 0%, #F2E4CE 65%, #D8BE98 100%);
-            border: 3px solid #8C6A3E;
-            box-shadow: 0 5px 0 #74552E, 0 8px 14px rgba(27, 67, 50, 0.16);
+            background: radial-gradient(circle at 32% 28%, #FFFDF9 0%, #F2ECE1 62%, #D9A76A 100%);
+            border: 3px solid #8A5E2B;
+            box-shadow: 0 5px 0 #6E491E, 0 8px 14px rgba(30, 63, 46, 0.16);
             transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
         }
 
@@ -100,18 +122,18 @@
 
         .molkky-pin:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #74552E;
+            box-shadow: 0 2px 0 #6E491E;
         }
 
         .molkky-pin.selected {
-            background: radial-gradient(circle at 32% 28%, #FEF3C7 0%, #F59E0B 72%, #B45309 100%);
-            border-color: #78350F;
+            background: radial-gradient(circle at 32% 28%, #FFE8DC 0%, #E06D3B 72%, #B5491D 100%);
+            border-color: #7C2D12;
             color: #FFFFFF;
-            box-shadow: 0 3px 0 #78350F, 0 0 0 4px rgba(245, 158, 11, 0.35);
+            box-shadow: 0 3px 0 #7C2D12, 0 0 0 4px rgba(224, 109, 59, 0.35);
             transform: translateY(2px) scale(0.97);
         }
 
-        /* 隱藏捲軸但可橫向滑動 */
+        /* 隱藏捲軸但支援橫向滑動 */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -121,37 +143,49 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-amberwood-500 selection:text-white">
+<body class="min-h-screen flex flex-col selection:bg-vitalorange-600 selection:text-white">
 
     <!-- ===================================================================== -->
-    <!-- 頂部固定導覽列 & 無障礙工具列                                            -->
+    <!-- 頂部固定導覽列（四大獨立分頁切換 + 無障礙與雲端設定工具列）               -->
     <!-- ===================================================================== -->
-    <header class="sticky top-0 z-40 bg-forest-800 text-white shadow-lg border-b-4 border-amberwood-600">
+    <header class="sticky top-0 z-40 bg-forest-800 text-white shadow-lg border-b-4 border-birch-300">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
-            <!-- 品牌標題 -->
-            <a href="#top" class="flex items-center gap-2.5 group">
-                <div class="w-10 h-10 rounded-2xl bg-birch-100 text-forest-800 font-black text-lg flex items-center justify-center shadow border-2 border-amberwood-500 group-hover:scale-105 transition">
+            <!-- 品牌識別（點擊回到分頁一） -->
+            <button type="button" onclick="switchTab('intro')" class="flex items-center gap-2.5 text-left group">
+                <div class="w-10 h-10 rounded-2xl bg-birch-100 text-forest-800 font-black text-lg flex items-center justify-center shadow border-2 border-birch-300 group-hover:scale-105 transition font-mono-num">
                     12
                 </div>
                 <div>
-                    <div class="font-black text-base sm:text-lg tracking-wide leading-tight flex items-center gap-1.5">
-                        <span>芬蘭撞柱 MÖLKKY</span>
+                    <div class="font-black text-base sm:text-lg tracking-wide leading-tight">
+                        芬蘭撞柱 MÖLKKY
                     </div>
-                    <p class="text-[11px] text-birch-200 font-medium">大學生適應體育體驗 ＆ 官方比賽計分系統</p>
+                    <p class="text-[11px] text-birch-100 font-medium">大學生適應體育體驗 ＆ 官方比賽計分系統</p>
                 </div>
-            </a>
+            </button>
 
-            <!-- 章節快速導覽（桌面版） -->
-            <nav class="hidden xl:flex items-center gap-1.5 text-sm font-bold">
-                <a href="#sec-intro" class="px-3 py-2 rounded-xl hover:bg-forest-700 transition">🪵 認識芬蘭撞柱</a>
-                <a href="#sec-adaptive" class="px-3 py-2 rounded-xl hover:bg-forest-700 transition">🎓 適應體育與任務卡</a>
-                <a href="#sec-rules" class="px-3 py-2 rounded-xl hover:bg-forest-700 transition">📐 官方規則圖解</a>
-                <a href="#sec-scoreboard" class="px-3 py-2 rounded-xl bg-amberwood-600 hover:bg-amberwood-700 text-white shadow transition">🏆 比賽計分系統</a>
+            <!-- 桌面版四大獨立分頁按鈕 -->
+            <nav class="hidden lg:flex items-center gap-1.5 text-sm font-bold" role="tablist" aria-label="主要單元分頁">
+                <button type="button" id="nav-tab-intro" onclick="switchTab('intro')" role="tab" aria-selected="true"
+                    class="px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 bg-vitalorange-600 text-white shadow">
+                    <span>🏠 認識芬蘭撞柱</span>
+                </button>
+                <button type="button" id="nav-tab-adaptive" onclick="switchTab('adaptive')" role="tab" aria-selected="false"
+                    class="px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 text-birch-100 hover:bg-forest-700">
+                    <span>♿ 適應體育與任務卡</span>
+                </button>
+                <button type="button" id="nav-tab-rules" onclick="switchTab('rules')" role="tab" aria-selected="false"
+                    class="px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 text-birch-100 hover:bg-forest-700">
+                    <span>📜 官方規則圖解</span>
+                </button>
+                <button type="button" id="nav-tab-scoreboard" onclick="switchTab('scoreboard')" role="tab" aria-selected="false"
+                    class="px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 text-birch-100 hover:bg-forest-700">
+                    <span>🏆 比賽計分系統</span>
+                </button>
             </nav>
 
-            <!-- 無障礙與雲端設定按鈕列 -->
+            <!-- 無障礙與 Google Sheet 連動設定按鈕列 -->
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <button type="button" id="btnContrast" onclick="toggleHighContrast()" title="切換高對比視覺模式"
+                <button type="button" id="btnContrast" onclick="toggleHighContrast()" title="切換高對比模式"
                     class="px-2.5 py-2 rounded-xl bg-forest-700 hover:bg-forest-600 text-birch-50 text-xs font-bold border border-forest-600 transition">
                     🌓 <span class="hidden sm:inline">高對比</span>
                 </button>
@@ -159,11 +193,11 @@
                     class="px-2.5 py-2 rounded-xl bg-forest-700 hover:bg-forest-600 text-birch-50 text-xs font-bold border border-forest-600 transition">
                     🔍 <span class="hidden sm:inline">大字體</span>
                 </button>
-                <button type="button" id="btnSpeech" onclick="toggleSpeech()" title="開啟或關閉語音分數播報"
-                    class="px-2.5 py-2 rounded-xl bg-amberwood-600 hover:bg-amberwood-700 text-white text-xs font-bold shadow transition">
+                <button type="button" id="btnSpeech" onclick="toggleSpeech()" title="語音播報開關"
+                    class="px-2.5 py-2 rounded-xl bg-forest-600 hover:bg-forest-700 text-white text-xs font-bold border border-birch-300/40 shadow transition">
                     <span id="speechIcon">🔊</span> <span id="speechText" class="hidden sm:inline">語音開</span>
                 </button>
-                <button type="button" onclick="openSheetModal()" title="設定 Google Sheet 雲端試算表連動"
+                <button type="button" onclick="openSheetModal()" title="Google Sheet 雲端連動設定"
                     class="px-3 py-2 rounded-xl bg-birch-100 hover:bg-white text-forest-800 text-xs font-black shadow border border-birch-300 flex items-center gap-1.5 transition">
                     <span id="navSheetDot" class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
                     <span>☁️ Sheet 連動</span>
@@ -171,138 +205,194 @@
             </div>
         </div>
 
-        <!-- 手機/平板快速導覽條 -->
-        <div class="xl:hidden bg-forest-900/90 px-3 py-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-bold border-t border-forest-700">
-            <a href="#sec-intro" class="whitespace-nowrap px-3 py-1.5 rounded-lg bg-forest-800 hover:bg-forest-700">🪵 認識撞柱</a>
-            <a href="#sec-adaptive" class="whitespace-nowrap px-3 py-1.5 rounded-lg bg-forest-800 hover:bg-forest-700">🎓 適應體育任務卡</a>
-            <a href="#sec-rules" class="whitespace-nowrap px-3 py-1.5 rounded-lg bg-forest-800 hover:bg-forest-700">📐 官方規則圖解</a>
-            <a href="#sec-scoreboard" class="whitespace-nowrap px-3 py-1.5 rounded-lg bg-amberwood-600 text-white">🏆 比賽計分系統</a>
+        <!-- 手機與平板版四大獨立分頁按鈕列 -->
+        <div class="lg:hidden bg-forest-900/95 px-3 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-bold border-t border-forest-700" role="tablist">
+            <button type="button" id="m-tab-intro" onclick="switchTab('intro')"
+                class="whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-vitalorange-600 text-white shadow transition">
+                🏠 認識芬蘭撞柱
+            </button>
+            <button type="button" id="m-tab-adaptive" onclick="switchTab('adaptive')"
+                class="whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-forest-800 text-birch-100 hover:bg-forest-700 transition">
+                ♿ 適應體育與任務卡
+            </button>
+            <button type="button" id="m-tab-rules" onclick="switchTab('rules')"
+                class="whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-forest-800 text-birch-100 hover:bg-forest-700 transition">
+                📜 官方規則圖解
+            </button>
+            <button type="button" id="m-tab-scoreboard" onclick="switchTab('scoreboard')"
+                class="whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-forest-800 text-birch-100 hover:bg-forest-700 transition">
+                🏆 比賽計分系統
+            </button>
         </div>
     </header>
 
     <!-- 全域提示訊息列 (Toast) -->
-    <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-forest-800 text-white px-4 py-3 rounded-2xl shadow-2xl border-2 border-amberwood-500 text-sm font-bold flex items-center gap-2.5">
+    <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-forest-800 text-white px-4 py-3 rounded-2xl shadow-2xl border-2 border-birch-300 text-sm font-bold flex items-center gap-2.5">
         <span id="toastIcon">ℹ️</span>
         <span id="toastMessage">訊息提示</span>
     </div>
 
     <!-- ===================================================================== -->
-    <!-- 主內容區                                                               -->
+    <!-- 主視圖容器：每次僅顯示當前選取的一個分頁（預設顯示分頁一）               -->
     <!-- ===================================================================== -->
-    <main id="top" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-12">
+    <main id="mainContainer" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-        <!-- Hero 橫幅 -->
-        <section class="bg-gradient-to-br from-forest-800 via-forest-700 to-forest-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl border-2 border-birch-300 relative overflow-hidden">
-            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <div class="lg:col-span-8 space-y-4">
-                    <div class="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-birch-100/15 border border-birch-200/30 text-birch-100 text-xs font-bold">
-                        <span>🇫🇮 源自芬蘭傳統投擲運動</span>
-                        <span>•</span>
-                        <span>♿ 全民共融適應體育首選</span>
-                        <span>•</span>
-                        <span>📋 依循 2023 官方比賽規則</span>
+        <!-- ================================================================= -->
+        <!-- 分頁一：🏠 認識芬蘭撞柱 (intro) — 預設開啟首頁                      -->
+        <!-- ================================================================= -->
+        <section id="panel-intro" class="tab-panel-animate space-y-8">
+            <!-- Hero 介紹橫幅 -->
+            <div class="bg-gradient-to-br from-forest-800 via-forest-600 to-forest-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl border-2 border-birch-300 relative overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1 rounded-full bg-birch-100/15 border border-birch-300/40 text-birch-100 text-xs font-bold">
+                            <span>🇫🇮 源自芬蘭拉赫蒂 (Lahti, 1996)</span>
+                            <span>•</span>
+                            <span>♿ 全民共融適應體育首選</span>
+                            <span>•</span>
+                            <span>📋 依循 2023 官方比賽規則</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-snug">
+                            結合準度、策略與共融精神的<br class="hidden sm:inline">
+                            <span class="text-birch-300">芬蘭撞柱 (Mölkky)</span> 互動體驗平台
+                        </h1>
+                        <p class="text-sm sm:text-base text-birch-100 leading-relaxed max-w-3xl">
+                            專為大學生適應體育（Adaptive Physical Education）課程打造。透過天然樺木柱下手投擲、距離與感官輔具調適，讓不同身心特質與運動經驗的學生皆能平等競技、共同思考算分策略，並即時上傳體驗合照與比賽紀錄。
+                        </p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button type="button" onclick="switchTab('adaptive')"
+                                class="px-5 py-3.5 rounded-2xl bg-vitalorange-600 hover:bg-vitalorange-700 text-white font-black text-sm shadow-lg transition transform active:scale-95">
+                                ♿ 前往適應體育體驗任務
+                            </button>
+                            <button type="button" onclick="switchTab('scoreboard')"
+                                class="px-5 py-3.5 rounded-2xl bg-birch-100 hover:bg-white text-forest-800 font-black text-sm shadow-lg transition transform active:scale-95">
+                                🏆 立即開啟比賽計分板
+                            </button>
+                        </div>
                     </div>
-                    <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-snug">
-                        不分身體條件、融合策略與精準算分的<br class="hidden sm:inline">
-                        <span class="text-amberwood-500">芬蘭撞柱 (Mölkky)</span> 互動學習平台
-                    </h1>
-                    <p class="text-sm sm:text-base text-birch-100 leading-relaxed max-w-3xl">
-                        專為大學適應體育（Adaptive Physical Education）課程設計。透過坐姿低重心投擲、盲眼聽聲辨位與融合雙人合作任務，讓學生在趣味競技中體驗共融運動設計，並即時記錄學習合照、反思與比賽數據至雲端。
-                    </p>
-                    <div class="flex flex-wrap gap-3 pt-2">
-                        <a href="#sec-adaptive" class="px-5 py-3 rounded-2xl bg-amberwood-600 hover:bg-amberwood-700 text-white font-black text-sm shadow-lg transition">
-                            🎓 開始體驗任務與上傳紀錄
-                        </a>
-                        <a href="#sec-scoreboard" class="px-5 py-3 rounded-2xl bg-birch-100 hover:bg-white text-forest-900 font-black text-sm shadow-lg transition">
-                            🏆 開啟比賽即時計分系統
-                        </a>
-                    </div>
-                </div>
-                <div class="lg:col-span-4 bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 space-y-3">
-                    <div class="text-xs font-black uppercase tracking-wider text-amberwood-400">核心致勝公式</div>
-                    <div class="grid grid-cols-2 gap-3 text-center">
-                        <div class="bg-forest-900/70 p-3 rounded-xl border border-forest-600">
-                            <div class="text-2xl font-black text-amberwood-400">50 分</div>
-                            <div class="text-xs text-birch-100 mt-1">精準達標即獲勝</div>
-                        </div>
-                        <div class="bg-forest-900/70 p-3 rounded-xl border border-forest-600">
-                            <div class="text-2xl font-black text-rose-400">→ 25 分</div>
-                            <div class="text-xs text-birch-100 mt-1">超過 50 分立即退回</div>
-                        </div>
-                        <div class="bg-forest-900/70 p-3 rounded-xl border border-forest-600">
-                            <div class="text-xl font-black text-emerald-300">倒 1 支</div>
-                            <div class="text-xs text-birch-100 mt-1">計該木柱編號分</div>
-                        </div>
-                        <div class="bg-forest-900/70 p-3 rounded-xl border border-forest-600">
-                            <div class="text-xl font-black text-sky-300">倒 ≥ 2 支</div>
-                            <div class="text-xs text-birch-100 mt-1">計倒下木柱總支數</div>
+
+                    <!-- 右側數據亮點卡 -->
+                    <div class="lg:col-span-4 bg-forest-900/65 backdrop-blur-sm rounded-2xl p-5 border border-birch-300/30 space-y-3">
+                        <div class="text-xs font-black uppercase tracking-wider text-birch-300">MÖLKKY 核心魅力指標</div>
+                        <div class="grid grid-cols-2 gap-3 text-center font-mono-num">
+                            <div class="bg-forest-800/90 p-3.5 rounded-xl border border-forest-600">
+                                <div class="text-2xl font-black text-birch-300">12 支</div>
+                                <div class="text-xs text-birch-100 mt-1 font-sans">天然樺木編號柱</div>
+                            </div>
+                            <div class="bg-forest-800/90 p-3.5 rounded-xl border border-forest-600">
+                                <div class="text-2xl font-black text-vitalorange-500">50 分</div>
+                                <div class="text-xs text-birch-100 mt-1 font-sans">精準達標即獲勝</div>
+                            </div>
+                            <div class="bg-forest-800/90 p-3.5 rounded-xl border border-forest-600">
+                                <div class="text-xl font-black text-emerald-300">3–4 米</div>
+                                <div class="text-xs text-birch-100 mt-1 font-sans">標準投擲距離</div>
+                            </div>
+                            <div class="bg-forest-800/90 p-3.5 rounded-xl border border-forest-600">
+                                <div class="text-xl font-black text-sky-300">→ 25 分</div>
+                                <div class="text-xs text-birch-100 mt-1 font-sans">爆分退回重追</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- ===================================================================== -->
-        <!-- 區塊 1：認識芬蘭撞柱 (Mölkky)                                           -->
-        <!-- ===================================================================== -->
-        <section id="sec-intro" class="scroll-mt-24 space-y-6">
-            <div class="flex flex-wrap items-end justify-between gap-2 border-b-2 border-birch-300 pb-3">
-                <div>
-                    <span class="text-xs font-black text-amberwood-700 uppercase tracking-wider">01 • ABOUT MÖLKKY</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-forest-800">🪵 認識芬蘭撞柱 (Mölkky)</h2>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-600 font-bold">結合保齡球準度、撞球走位與心算策略的北歐國民運動</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- 起源與器材 -->
+            <!-- 三張核心特色卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 space-y-3">
                     <div class="w-12 h-12 rounded-2xl bg-birch-100 text-2xl flex items-center justify-center border border-birch-300">🇫🇮</div>
-                    <h3 class="text-xl font-black text-forest-800">1996 芬蘭拉赫蒂起源</h3>
+                    <h2 class="text-xl font-black text-forest-800">芬蘭拉赫蒂 (Lahti, 1996) 起源</h2>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        芬蘭撞柱（Mölkky）由芬蘭公司 Lahden Paikka 於 1996 年發明，靈感源自芬蘭傳統投擲遊戲 <em>Kyykkä</em>。全套器材僅需 <strong>12 支斜切頂面的天然樺木柱（編號 1–12）</strong>、<strong>1 支投擲木棒（Mölkky）</strong>與起點尺，無需龐大體能負荷，適合全齡與各類身心特質者共同參與。
+                        芬蘭撞柱（Mölkky）由芬蘭拉赫蒂的 Lahden Paikka 公司於 1996 年研發，靈感源自卡累利阿地區數百年歷史的傳統木柱遊戲 <em>Kyykkä</em>。自推出以來迅速風靡歐洲與亞洲，每年於芬蘭舉辦世界錦標賽，成為跨世代共融的國民運動。
                     </p>
                 </div>
 
-                <!-- 雙軌計分魅力 -->
                 <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-forest-50 text-2xl flex items-center justify-center border border-forest-100">🎯</div>
-                    <h3 class="text-xl font-black text-forest-800">單支計號、多支計數</h3>
+                    <div class="w-12 h-12 rounded-2xl bg-forest-50 text-2xl flex items-center justify-center border border-forest-100">🪵</div>
+                    <h2 class="text-xl font-black text-forest-800">天然樺木斜切柱與投擲棒</h2>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        每回合投擲後，<strong>若僅有 1 支木柱完全倒地</strong>，則獲得該木柱頂端標示的數字分數（1～12 分）；<strong>若有 2 支或以上木柱同時倒地</strong>，則不論編號大小，一律以「倒下的木柱總支數」作為得分（2～12 分）。若木柱斜靠在其他木柱或投擲棒上未完全貼地，則不予計分。
+                        全套器材採用永續採伐的<strong>芬蘭天然白樺木</strong>製成，包含 <strong>12 支頂面 45 度斜切的木柱（印有清晰編號 1–12）</strong>、<strong>1 支圓柱形投擲木棒（Mölkky）</strong>與起點尺。木材溫潤好握、敲擊聲清脆悅耳，非常適合搭配聽聲辨位教學。
                     </p>
                 </div>
 
-                <!-- 50分精準制勝 -->
                 <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 space-y-3">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-2xl flex items-center justify-center border border-amber-200">⚖️</div>
-                    <h3 class="text-xl font-black text-forest-800">精準 50 分與爆分機制</h3>
+                    <div class="w-12 h-12 rounded-2xl bg-orange-50 text-2xl flex items-center justify-center border border-orange-200">🤝</div>
+                    <h2 class="text-xl font-black text-forest-800">策略、包容與精準度的融合</h2>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        比賽目標是率先<strong>精準累積至 50 分</strong>。若某回合得分後總分<strong>超過 50 分（例如 48 分又得 5 分變成 53 分）</strong>，該隊分數將立即退回 <strong>25 分</strong>重新追趕！因此比賽後半段考驗團隊的目標鎖定與風險控管能力。
+                        不同於比拼爆發力或速度的競技運動，Mölkky 更重視<strong>下手控制力、心算加減與團隊戰術佈局</strong>。無論站姿、坐姿或使用輔具，每位選手都能透過精準單點狙擊或分散木柱陣型左右戰局，展現高度運動包容性。
                     </p>
                 </div>
+            </div>
+
+            <!-- 核心玩法 3 步驟 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-birch-200 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-birch-200 pb-3">
+                    <h2 class="text-xl sm:text-2xl font-black text-forest-800">⚡ 三步驟快速掌握核心玩法</h2>
+                    <span class="px-3 py-1 rounded-full bg-birch-100 text-forest-800 text-xs font-black">3 MINUTES TO LEARN</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="bg-birch-50 rounded-2xl p-5 border border-birch-200 space-y-2">
+                        <span class="inline-block px-3 py-1 rounded-xl bg-forest-600 text-white text-xs font-black font-mono-num">STEP 01</span>
+                        <h3 class="text-lg font-black text-forest-800">三角形排列與 3–4 米下手投擲</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            將 12 支木柱緊密排成四排三角形，在距離前排 <strong>3 至 4 公尺</strong>處放置起點尺（適應體育可依需求縮短距離）。選手於起點尺後方以<strong>下手拋擲</strong>投出木棒，每次投擲後倒下木柱在<strong>最後倒地位置原地扶正</strong>。
+                        </p>
+                    </div>
+
+                    <div class="bg-birch-50 rounded-2xl p-5 border border-birch-200 space-y-2">
+                        <span class="inline-block px-3 py-1 rounded-xl bg-birch-400 text-white text-xs font-black font-mono-num">STEP 02</span>
+                        <h3 class="text-lg font-black text-forest-800">單支計編號分、多支計倒下支數</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            若本回合<strong>僅有 1 支木柱完全倒地</strong>，獲得該木柱上的數字分數（1–12 分）；若<strong>有 2 支或以上木柱同時倒地</strong>，則不論編號大小，一律以「倒下的木柱總支數」計分（2–12 分）。未完全貼地者不計分。
+                        </p>
+                    </div>
+
+                    <div class="bg-birch-50 rounded-2xl p-5 border border-birch-200 space-y-2">
+                        <span class="inline-block px-3 py-1 rounded-xl bg-vitalorange-600 text-white text-xs font-black font-mono-num">STEP 03</span>
+                        <h3 class="text-lg font-black text-forest-800">剛好 50 分獲勝、超過退回 25 分</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            率先<strong>精準累積至 50 分</strong>的隊伍立即勝出！若某回合得分後總分<strong>超過 50 分</strong>（如 47 分再得 5 分成為 52 分），分數會直接退回 <strong>25 分</strong>重新開始；若連續 3 次投擲皆得 0 分則該局出局。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 單元底部上一頁 / 下一頁導引按鈕 -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t-2 border-birch-200">
+                <div class="text-xs font-bold text-slate-500">單元 1 / 4：認識芬蘭撞柱</div>
+                <button type="button" onclick="switchTab('adaptive')"
+                    class="px-6 py-3 rounded-2xl bg-forest-600 hover:bg-forest-700 text-white font-black text-sm shadow-md transition flex items-center gap-2 ml-auto">
+                    <span>下一單元：♿ 適應體育與任務卡</span>
+                    <span>➔</span>
+                </button>
             </div>
         </section>
 
-        <!-- ===================================================================== -->
-        <!-- 區塊 2：大學生適應體育體驗 (Adaptive PE) 與「體驗任務卡」紀錄區           -->
-        <!-- ===================================================================== -->
-        <section id="sec-adaptive" class="scroll-mt-24 space-y-6">
-            <div class="flex flex-wrap items-end justify-between gap-2 border-b-2 border-birch-300 pb-3">
+        <!-- ================================================================= -->
+        <!-- 分頁二：♿ 適應體育與任務卡 (adaptive)                              -->
+        <!-- ================================================================= -->
+        <section id="panel-adaptive" class="hidden tab-panel-animate space-y-8">
+            <!-- 單元標題卡 -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <span class="text-xs font-black text-amberwood-700 uppercase tracking-wider">02 • ADAPTIVE PHYSICAL EDUCATION</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-forest-800">🎓 大學生適應體育體驗與「體驗任務卡」</h2>
+                    <span class="text-xs font-black text-vitalorange-600 uppercase tracking-wider">UNIT 02 • ADAPTIVE PHYSICAL EDUCATION</span>
+                    <h1 class="text-2xl sm:text-3xl font-black text-forest-800 mt-0.5">♿ 大學生適應體育體驗與任務卡</h1>
+                    <p class="text-sm text-slate-600 mt-1">透過任務調整（Task Modification）設計包容性運動情境，完成體驗後請上傳合照與反思！</p>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-600 font-bold">透過規則調適（Modification）落實融合體育（Inclusive PE）</p>
+                <button type="button" onclick="openSheetModal()"
+                    class="px-4 py-2.5 rounded-2xl bg-birch-100 hover:bg-birch-200 border border-birch-300 text-forest-800 font-black text-xs sm:text-sm flex items-center gap-2 transition">
+                    <span id="cardSheetDot" class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
+                    <span>☁️ Google Sheet 雲端設定</span>
+                </button>
             </div>
 
-            <!-- 適應體育調整策略互動頁籤 -->
+            <!-- 適應體育調整原則互動切換卡 -->
             <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">
-                    <h3 class="text-lg sm:text-xl font-black text-forest-800">🛠️ 適應體育教學調整三維度（點擊切換檢視）</h3>
+                    <h2 class="text-lg sm:text-xl font-black text-forest-800">🛠️ 大學適應體育調整原則（點擊切換檢視）</h2>
                     <div class="flex flex-wrap gap-2" role="tablist">
                         <button type="button" id="tab-adaptive-distance" onclick="selectAdaptiveTab('distance')"
-                            class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition bg-forest-800 text-white shadow">
+                            class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition bg-forest-600 text-white shadow">
                             📏 距離與空間調整
                         </button>
                         <button type="button" id="tab-adaptive-sensory" onclick="selectAdaptiveTab('sensory')"
@@ -315,158 +405,156 @@
                         </button>
                     </div>
                 </div>
-                <div id="adaptiveTabContent" class="bg-birch-50 rounded-2xl p-5 border border-birch-300 text-sm text-slate-700 leading-relaxed">
-                    <!-- 由 JS 動態渲染 -->
+                <div id="adaptiveTabContent" class="bg-birch-50 rounded-2xl p-5 border border-birch-200 text-sm text-slate-700 leading-relaxed">
+                    <!-- 由 JS 渲染 -->
                 </div>
             </div>
 
-            <!-- 大學生體驗任務卡 & 學生學習成果上傳區 -->
+            <!-- 大學生體驗任務卡（3 張互動任務卡 + 進度條） -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-birch-200 space-y-6">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-black text-forest-800">📋 課程「體驗任務卡」與學習成果紀錄</h3>
-                        <p class="text-sm text-slate-600">請分組體驗下列三項適應體育挑戰，點擊卡片標記「已完成」，系統將自動帶入下方上傳表單！</p>
+                        <h2 class="text-xl sm:text-2xl font-black text-forest-800">📋 大學生適應體育「體驗任務卡」</h2>
+                        <p class="text-sm text-slate-600">點擊卡片標記「已完成」，勾選狀態將與下方提交表單自動雙向同步。</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="openSheetModal()"
-                            class="px-3.5 py-2 rounded-xl bg-birch-100 hover:bg-birch-200 border border-birch-300 text-forest-800 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition">
-                            <span id="cardSheetDot" class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
-                            <span>☁️ Google Sheet 設定</span>
-                        </button>
-                        <div class="px-4 py-2 rounded-xl bg-forest-50 border border-forest-600/30 font-black text-forest-800 text-sm">
-                            完成進度：<span id="questProgressBadge" class="text-amberwood-700">0 / 3</span>
-                        </div>
+                    <div class="px-4 py-2 rounded-2xl bg-forest-50 border border-forest-600/30 font-black text-forest-800 text-sm font-mono-num">
+                        任務完成度：<span id="questProgressBadge" class="text-vitalorange-600">0 / 3</span>
                     </div>
                 </div>
 
                 <!-- 進度條 -->
-                <div class="w-full h-3 bg-birch-100 rounded-full overflow-hidden border border-birch-300">
-                    <div id="questProgressBar" class="h-full bg-gradient-to-r from-forest-600 to-amberwood-500 transition-all duration-300" style="width: 0%;"></div>
+                <div class="w-full h-3 bg-birch-100 rounded-full overflow-hidden border border-birch-200">
+                    <div id="questProgressBar" class="h-full bg-gradient-to-r from-forest-600 to-vitalorange-600 transition-all duration-300" style="width: 0%;"></div>
                 </div>
 
-                <!-- 三張體驗任務卡 -->
+                <!-- 三張任務卡片 -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <!-- 任務 1 -->
                     <div id="questCard-0" onclick="toggleQuestCard(0)"
-                        class="cursor-pointer rounded-2xl p-5 border-2 border-birch-300 bg-birch-50/70 hover:border-amberwood-500 transition flex flex-col justify-between select-none">
+                        class="cursor-pointer rounded-2xl p-5 border-2 border-birch-200 bg-birch-50 hover:border-vitalorange-500 transition flex flex-col justify-between select-none">
                         <div class="space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <span class="px-2.5 py-1 rounded-lg bg-amberwood-600 text-white text-xs font-black">任務 1 • 動作與視角適應</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-vitalorange-600 text-white text-xs font-black">任務 1 • 動作與視角</span>
                                 <span id="questCheck-0" class="w-7 h-7 rounded-full border-2 border-slate-400 bg-white flex items-center justify-center text-sm font-black"></span>
                             </div>
-                            <h4 class="text-lg font-black text-forest-800">🦽 輪椅 / 坐姿視角投擲體驗</h4>
+                            <h3 class="text-lg font-black text-forest-800">🦽 輪椅 / 坐姿視角投擲</h3>
                             <p class="text-sm text-slate-600 leading-relaxed">
-                                將投擲距離調整為 <strong>2 公尺</strong>，全員採坐姿或輪椅進行 5 回合投擲。體會在下肢限制與較低視線高度下，如何運用軀幹旋轉與手臂擺盪完成精準下手拋擲。
+                                將起點線調整至 <strong>2 公尺</strong>，全員採坐姿或輪椅進行 5 回合投擲。體驗在低視線高度與下肢無蹬地發力條件下，如何運用軀幹與肩臂協調控制投擲力道。
                             </p>
                         </div>
-                        <div id="questStatusText-0" class="mt-4 pt-3 border-t border-birch-200 text-xs font-black text-amberwood-700">
+                        <div id="questStatusText-0" class="mt-4 pt-3 border-t border-birch-200 text-xs font-black text-vitalorange-700">
                             ⬜ 點擊卡片標記完成
                         </div>
                     </div>
 
                     <!-- 任務 2 -->
                     <div id="questCard-1" onclick="toggleQuestCard(1)"
-                        class="cursor-pointer rounded-2xl p-5 border-2 border-birch-300 bg-birch-50/70 hover:border-amberwood-500 transition flex flex-col justify-between select-none">
+                        class="cursor-pointer rounded-2xl p-5 border-2 border-birch-200 bg-birch-50 hover:border-vitalorange-500 transition flex flex-col justify-between select-none">
                         <div class="space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <span class="px-2.5 py-1 rounded-lg bg-forest-700 text-white text-xs font-black">任務 2 • 感官補償與溝通</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-forest-600 text-white text-xs font-black">任務 2 • 感官補償</span>
                                 <span id="questCheck-1" class="w-7 h-7 rounded-full border-2 border-slate-400 bg-white flex items-center justify-center text-sm font-black"></span>
                             </div>
-                            <h4 class="text-lg font-black text-forest-800">🦯 盲眼 / 視覺限制聽聲辨位挑戰</h4>
+                            <h3 class="text-lg font-black text-forest-800">🦯 盲眼聽聲辨位挑戰</h3>
                             <p class="text-sm text-slate-600 leading-relaxed">
-                                投擲者戴上眼罩或模擬視障鏡，由同伴在目標木柱後方以拍手或敲擊木柱發出聲響，並搭配「鐘面方位＋距離（如 1 點鐘方向、2.5 米）」口語引導完成投擲。
+                                投擲者戴上眼罩或模擬視障鏡，由同伴在目標木柱後方敲擊木棒發出聲響，並搭配「鐘面方位（如 1 點鐘方向）＋距離報位」引導完成精準投擲。
                             </p>
                         </div>
-                        <div id="questStatusText-1" class="mt-4 pt-3 border-t border-birch-200 text-xs font-black text-amberwood-700">
+                        <div id="questStatusText-1" class="mt-4 pt-3 border-t border-birch-200 text-xs font-black text-vitalorange-700">
                             ⬜ 點擊卡片標記完成
                         </div>
                     </div>
 
                     <!-- 任務 3 -->
                     <div id="questCard-2" onclick="toggleQuestCard(2)"
-                        class="cursor-pointer rounded-2xl p-5 border-2 border-birch-300 bg-birch-50/70 hover:border-amberwood-500 transition flex flex-col justify-between select-none">
+                        class="cursor-pointer rounded-2xl p-5 border-2 border-birch-200 bg-birch-50 hover:border-vitalorange-500 transition flex flex-col justify-between select-none">
                         <div class="space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <span class="px-2.5 py-1 rounded-lg bg-sky-700 text-white text-xs font-black">任務 3 • 融合團隊決策</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-birch-400 text-white text-xs font-black">任務 3 • 融合共創</span>
                                 <span id="questCheck-2" class="w-7 h-7 rounded-full border-2 border-slate-400 bg-white flex items-center justify-center text-sm font-black"></span>
                             </div>
-                            <h4 class="text-lg font-black text-forest-800">🤝 融合雙人合作策略賽</h4>
+                            <h3 class="text-lg font-black text-forest-800">🤝 融合雙人合作策略賽</h3>
                             <p class="text-sm text-slate-600 leading-relaxed">
-                                兩人一組進行融合分工：一人擔任「陣型觀察與算分軍師」評估單支狙擊或散開降風險，另一人擔任「執行投手」，合作在不爆分的情況下精準收尾 50 分！
+                                兩人一組進行融合角色分工：一人擔任「陣型與心算軍師」評估單支狙擊或散開降風險，另一人擔任「執行投手」，合作在不爆分的情況下精準收尾 50 分！
                             </p>
                         </div>
-                        <div id="questStatusText-2" class="mt-4 pt-3 border-t border-birch-200 text-xs font-black text-amberwood-700">
+                        <div id="questStatusText-2" class="mt-4 pt-3 border-t border-birch-200 text-xs font-black text-vitalorange-700">
                             ⬜ 點擊卡片標記完成
                         </div>
                     </div>
                 </div>
 
-                <!-- 學生學習成果、合照與心得上傳表單 -->
+                <!-- 學生完成任務紀錄與合照/心得上傳區 -->
                 <div class="pt-6 border-t-2 border-birch-200 space-y-5">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                            <h4 class="text-lg sm:text-xl font-black text-forest-800">📝 學生學習成果、合照與心得上傳表單</h4>
-                            <p class="text-xs sm:text-sm text-slate-600">填寫個人或組員資料、上傳現場體驗合照（自動壓縮）與課後反思，同步儲存本機與 Google Sheet。</p>
+                            <h3 class="text-lg sm:text-xl font-black text-forest-800">📝 學生完成任務紀錄與合照 / 心得上傳區</h3>
+                            <p class="text-xs sm:text-sm text-slate-600">填寫基本資料、上傳現場體驗合照（自動 Canvas 壓縮）與心得，同步保存於本機紀錄牆與 Google Sheet。</p>
                         </div>
                         <span id="formCloudBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">
                             ☁️ 目前模式：本機儲存（點擊右上設定可連動 Google Sheet）
                         </span>
                     </div>
 
-                    <form id="questSubmitForm" onsubmit="handleQuestFormSubmit(event)" class="bg-birch-50 rounded-2xl p-5 sm:p-6 border border-birch-300 space-y-5">
-                        <!-- 學生基本資料三欄 -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <form id="questSubmitForm" onsubmit="handleQuestFormSubmit(event)" class="bg-birch-50 rounded-2xl p-5 sm:p-6 border border-birch-200 space-y-5">
+                        <!-- 4 個基本資料欄位：班級／系級、學號、姓名、組別／隊名 -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
-                                <label for="inputStudentName" class="block text-xs font-black text-forest-800 mb-1.5">學生姓名（可填代表或組員多位） <span class="text-rose-600">*</span></label>
-                                <input type="text" id="inputStudentName" required placeholder="例：王小明、陳小華"
-                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-300 text-sm font-bold focus:outline-none focus:border-forest-600">
+                                <label for="inputClassDept" class="block text-xs font-black text-forest-800 mb-1.5">班級／系級 <span class="text-rose-600">*</span></label>
+                                <input type="text" id="inputClassDept" required placeholder="例：體育學系大二"
+                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-200 text-sm font-bold focus:outline-none focus:border-forest-600">
                             </div>
                             <div>
                                 <label for="inputStudentId" class="block text-xs font-black text-forest-800 mb-1.5">學號 <span class="text-rose-600">*</span></label>
                                 <input type="text" id="inputStudentId" required placeholder="例：11201025"
-                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-300 text-sm font-bold focus:outline-none focus:border-forest-600">
+                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-200 text-sm font-bold font-mono-num focus:outline-none focus:border-forest-600">
                             </div>
                             <div>
-                                <label for="inputClassGroup" class="block text-xs font-black text-forest-800 mb-1.5">班級 / 組別 <span class="text-rose-600">*</span></label>
-                                <input type="text" id="inputClassGroup" required placeholder="例：體育系大二 / 第 4 組"
-                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-300 text-sm font-bold focus:outline-none focus:border-forest-600">
+                                <label for="inputStudentName" class="block text-xs font-black text-forest-800 mb-1.5">姓名 <span class="text-rose-600">*</span></label>
+                                <input type="text" id="inputStudentName" required placeholder="例：王小明"
+                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-200 text-sm font-bold focus:outline-none focus:border-forest-600">
+                            </div>
+                            <div>
+                                <label for="inputTeamGroup" class="block text-xs font-black text-forest-800 mb-1.5">組別／隊名 <span class="text-rose-600">*</span></label>
+                                <input type="text" id="inputTeamGroup" required placeholder="例：第 3 組 / 北歐白樺隊"
+                                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border-2 border-birch-200 text-sm font-bold focus:outline-none focus:border-forest-600">
                             </div>
                         </div>
 
-                        <!-- 勾選完成的體驗任務（與上方卡片雙向同步） -->
-                        <div class="bg-white rounded-2xl p-4 border border-birch-300 space-y-2.5">
+                        <!-- 已完成體驗任務勾選（與上方卡片自動雙向同步） -->
+                        <div class="bg-white rounded-2xl p-4 border border-birch-200 space-y-2.5">
                             <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span class="text-xs font-black text-forest-800">✅ 勾選完成的體驗任務（與上方體驗任務卡即時同步）：</span>
-                                <span id="formQuestCountLabel" class="px-2.5 py-0.5 rounded-lg bg-forest-700 text-white text-xs font-black">已選 0 項</span>
+                                <span class="text-xs font-black text-forest-800">✅ 已完成體驗任務勾選（與上方體驗任務卡即時雙向同步）：</span>
+                                <span id="formQuestCountLabel" class="px-2.5 py-0.5 rounded-lg bg-forest-600 text-white text-xs font-black font-mono-num">已選 0 / 3 項</span>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs sm:text-sm font-bold">
                                 <label class="flex items-center gap-2 p-2.5 rounded-xl bg-birch-50 border border-birch-200 cursor-pointer hover:border-forest-600">
                                     <input type="checkbox" id="chkTask-0" onchange="syncCheckboxToCard(0)" class="w-4 h-4 accent-forest-700 rounded">
-                                    <span>🦽 輪椅 / 坐姿視角投擲體驗</span>
+                                    <span>🦽 任務 1：輪椅/坐姿視角投擲</span>
                                 </label>
                                 <label class="flex items-center gap-2 p-2.5 rounded-xl bg-birch-50 border border-birch-200 cursor-pointer hover:border-forest-600">
                                     <input type="checkbox" id="chkTask-1" onchange="syncCheckboxToCard(1)" class="w-4 h-4 accent-forest-700 rounded">
-                                    <span>🦯 盲眼 / 視覺限制聽聲辨位</span>
+                                    <span>🦯 任務 2：盲眼聽聲辨位挑戰</span>
                                 </label>
                                 <label class="flex items-center gap-2 p-2.5 rounded-xl bg-birch-50 border border-birch-200 cursor-pointer hover:border-forest-600">
                                     <input type="checkbox" id="chkTask-2" onchange="syncCheckboxToCard(2)" class="w-4 h-4 accent-forest-700 rounded">
-                                    <span>🤝 融合雙人合作策略賽</span>
+                                    <span>🤝 任務 3：融合雙人合作策略賽</span>
                                 </label>
                             </div>
                         </div>
 
-                        <!-- 合照上傳與心得反思兩欄 -->
+                        <!-- 合照上傳區 + 學習心得與反思（附快速反思提示標籤） -->
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                            <!-- 合照上傳（HTML5 Canvas 自動壓縮至寬度 800px, JPEG 0.7） -->
-                            <div class="lg:col-span-5 bg-white rounded-2xl p-4 border-2 border-dashed border-birch-400 flex flex-col justify-between space-y-3">
+                            <!-- 合照上傳區（HTML5 Canvas 等比例縮放至最大寬度 800px, JPEG 0.7） -->
+                            <div class="lg:col-span-5 bg-white rounded-2xl p-4 border-2 border-dashed border-birch-300 flex flex-col justify-between space-y-3">
                                 <div>
-                                    <label class="block text-xs font-black text-forest-800 mb-1">📸 現場體驗合照上傳（自動 Canvas 壓縮）</label>
-                                    <p class="text-[11px] text-slate-500">支援手機相機現場拍照或相簿選取，系統會自動等比例縮放至寬度 800px（JPEG 0.7）以利雲端快速傳輸。</p>
+                                    <label class="block text-xs font-black text-forest-800 mb-1">📸 體驗合照上傳區（自動 Canvas 壓縮）</label>
+                                    <p class="text-[11px] text-slate-500">支援手機相機拍照與相簿選取，自動等比例縮放至最大寬度 800px（JPEG 0.7 壓縮）。</p>
                                 </div>
 
-                                <div id="photoUploadArea" class="flex-1 flex flex-col items-center justify-center py-5 px-3 bg-birch-50 rounded-xl border border-birch-200 text-center">
-                                    <label for="inputStudentPhoto" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white font-bold text-xs sm:text-sm shadow transition">
-                                        <span>📷 拍照或選擇體驗合照</span>
+                                <div id="photoUploadArea" class="flex-1 flex flex-col items-center justify-center py-6 px-3 bg-birch-50 rounded-xl border border-birch-200 text-center">
+                                    <label for="inputStudentPhoto" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest-600 hover:bg-forest-700 text-white font-bold text-xs sm:text-sm shadow transition">
+                                        <span>📷 拍照或從相簿選擇合照</span>
                                     </label>
                                     <input type="file" id="inputStudentPhoto" accept="image/*" class="hidden" onchange="handlePhotoFileSelect(event)">
                                     <span id="photoUploadHint" class="text-[11px] text-slate-500 mt-2">尚未選擇照片（選填）</span>
@@ -474,185 +562,269 @@
 
                                 <div id="photoPreviewBox" class="hidden space-y-2">
                                     <div class="relative rounded-xl overflow-hidden border-2 border-forest-600 bg-slate-900">
-                                        <img id="photoPreviewImg" src="" alt="體驗合照縮圖預覽" class="w-full max-h-48 object-contain mx-auto">
+                                        <img id="photoPreviewImg" src="" alt="體驗合照預覽圖" class="w-full max-h-48 object-contain mx-auto">
                                         <button type="button" onclick="clearSelectedPhoto()"
                                             class="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-black shadow">
-                                            ✕ 移除照片
+                                            ✕ 移除
                                         </button>
                                     </div>
-                                    <p id="photoCompressInfo" class="text-[11px] font-bold text-emerald-700 text-center"></p>
+                                    <p id="photoCompressInfo" class="text-[11px] font-bold text-emerald-700 text-center font-mono-num"></p>
                                 </div>
                             </div>
 
-                            <!-- 體驗心得與適應體育反思（含即時字數統計） -->
-                            <div class="lg:col-span-7 flex flex-col justify-between space-y-2">
+                            <!-- 學習心得與反思（附快速反思提示標籤） -->
+                            <div class="lg:col-span-7 flex flex-col justify-between space-y-2.5">
                                 <div class="flex items-center justify-between">
-                                    <label for="inputReflection" class="block text-xs font-black text-forest-800">💭 體驗心得與適應體育反思 <span class="text-rose-600">*</span></label>
-                                    <span id="reflectionCharCount" class="text-xs font-bold text-slate-500">0 字</span>
+                                    <label for="inputReflection" class="block text-xs font-black text-forest-800">💭 學習心得與反思 <span class="text-rose-600">*</span></label>
+                                    <span id="reflectionCharCount" class="text-xs font-bold text-slate-500 font-mono-num">0 字</span>
                                 </div>
-                                <p class="text-xs text-forest-800 bg-forest-50 px-3 py-2 rounded-xl border border-forest-200">
-                                    💡 <strong>反思引導</strong>：在坐姿低視角或蒙眼聽聲辨位時，你發現感官線索與發力方式有什麼變化？若未來帶領身心障礙朋友參與，你會如何調整規則或輔具？
-                                </p>
+
+                                <!-- 快速反思提示標籤（點擊可插入開頭引導語） -->
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span class="text-[11px] font-bold text-slate-500">💡 點擊插入反思引導：</span>
+                                    <button type="button" onclick="appendReflectionPrompt('【坐姿低視角觀察】改用坐姿投擲時，我發現發力與瞄準高度的改變在於：')"
+                                        class="px-2.5 py-1 rounded-lg bg-forest-50 hover:bg-forest-100 text-forest-800 border border-forest-200 text-[11px] font-bold transition">
+                                        + 坐姿視角差異
+                                    </button>
+                                    <button type="button" onclick="appendReflectionPrompt('【聽聲辨位與溝通】在蒙眼依靠聲音引導時，最有效的口語提示方式是：')"
+                                        class="px-2.5 py-1 rounded-lg bg-forest-50 hover:bg-forest-100 text-forest-800 border border-forest-200 text-[11px] font-bold transition">
+                                        + 聽聲辨位感受
+                                    </button>
+                                    <button type="button" onclick="appendReflectionPrompt('【適應體育規則設計】若帶領身心障礙同學參與，我建議調整的規則或輔具為：')"
+                                        class="px-2.5 py-1 rounded-lg bg-forest-50 hover:bg-forest-100 text-forest-800 border border-forest-200 text-[11px] font-bold transition">
+                                        + 規則調適建議
+                                    </button>
+                                </div>
+
                                 <textarea id="inputReflection" rows="5" required oninput="updateReflectionCount()"
-                                    placeholder="請寫下你們小組的體驗觀察、規則調整想法與合作心得..."
-                                    class="w-full p-3.5 rounded-xl bg-white border-2 border-birch-300 text-sm leading-relaxed focus:outline-none focus:border-forest-600"></textarea>
+                                    placeholder="請寫下你們小組在體驗任務中的觀察、規則調整想法與融合合作心得..."
+                                    class="w-full p-3.5 rounded-xl bg-white border-2 border-birch-200 text-sm leading-relaxed focus:outline-none focus:border-forest-600"></textarea>
                             </div>
                         </div>
 
-                        <!-- 送出按鈕列 -->
+                        <!-- 送出按鈕 -->
                         <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
                             <span id="questSubmitStatusMsg" class="text-xs sm:text-sm font-bold text-forest-700"></span>
                             <button type="submit" id="btnSubmitQuest"
-                                class="px-6 py-3.5 rounded-2xl bg-amberwood-600 hover:bg-amberwood-700 text-white font-black text-sm sm:text-base shadow-lg transition transform active:scale-95 ml-auto flex items-center gap-2">
-                                <span>☁️ 提交體驗紀錄與合照</span>
+                                class="px-6 py-3.5 rounded-2xl bg-vitalorange-600 hover:bg-vitalorange-700 text-white font-black text-sm sm:text-base shadow-lg transition transform active:scale-95 ml-auto flex items-center gap-2">
+                                <span>☁️ 提交完成紀錄與合照</span>
                             </button>
                         </div>
                     </form>
 
-                    <!-- 本機體驗紀錄牆 -->
+                    <!-- 本機紀錄牆（附縮圖檢視、刪除單筆與 CSV 匯出） -->
                     <div class="bg-white rounded-2xl p-5 border-2 border-birch-200 space-y-4">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div class="flex items-center gap-2">
-                                <h4 class="font-black text-forest-800 text-base sm:text-lg">🗂️ 本機體驗紀錄牆（即時展示已提交成果）</h4>
-                                <span id="localRecordsCountBadge" class="px-2.5 py-0.5 rounded-full bg-birch-200 text-forest-900 text-xs font-black">0 筆</span>
+                                <h4 class="font-black text-forest-800 text-base sm:text-lg">🗂️ 本機體驗紀錄牆</h4>
+                                <span id="localRecordsCountBadge" class="px-2.5 py-0.5 rounded-full bg-birch-200 text-forest-900 text-xs font-black font-mono-num">0 筆</span>
                             </div>
                             <div class="flex flex-wrap gap-2">
                                 <button type="button" onclick="exportStudentRecordsCsv()"
-                                    class="px-3.5 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white font-bold text-xs shadow transition">
-                                    📥 匯出學生紀錄 CSV
+                                    class="px-3.5 py-2 rounded-xl bg-forest-600 hover:bg-forest-700 text-white font-bold text-xs shadow transition">
+                                    📥 匯出紀錄 CSV
                                 </button>
                                 <button type="button" onclick="clearAllStudentRecords()"
                                     class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition">
-                                    🗑️ 清除本機紀錄
+                                    🗑️ 全部清空
                                 </button>
                             </div>
                         </div>
 
                         <div id="studentRecordsWall" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- 由 JS 動態渲染學生紀錄卡片 -->
+                            <!-- 由 JS 渲染紀錄卡片（含刪除單筆按鈕） -->
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 單元底部上一頁 / 下一頁導引按鈕 -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t-2 border-birch-200">
+                <button type="button" onclick="switchTab('intro')"
+                    class="px-5 py-3 rounded-2xl bg-birch-100 hover:bg-birch-200 text-forest-800 font-black text-sm border border-birch-300 transition flex items-center gap-2">
+                    <span>⬅</span>
+                    <span>上一單元：🏠 認識芬蘭撞柱</span>
+                </button>
+                <span class="text-xs font-bold text-slate-500 hidden sm:inline">單元 2 / 4：適應體育與任務卡</span>
+                <button type="button" onclick="switchTab('rules')"
+                    class="px-6 py-3 rounded-2xl bg-forest-600 hover:bg-forest-700 text-white font-black text-sm shadow-md transition flex items-center gap-2">
+                    <span>下一單元：📜 官方規則圖解</span>
+                    <span>➔</span>
+                </button>
+            </div>
         </section>
 
-        <!-- ===================================================================== -->
-        <!-- 區塊 3：官方規則與標準陣型互動圖解（2023 官方版）                        -->
-        <!-- ===================================================================== -->
-        <section id="sec-rules" class="scroll-mt-24 space-y-6">
-            <div class="flex flex-wrap items-end justify-between gap-2 border-b-2 border-birch-300 pb-3">
+        <!-- ================================================================= -->
+        <!-- 分頁三：📜 官方規則圖解 (rules)                                     -->
+        <!-- ================================================================= -->
+        <section id="panel-rules" class="hidden tab-panel-animate space-y-8">
+            <!-- 單元標題卡 -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <span class="text-xs font-black text-amberwood-700 uppercase tracking-wider">03 • OFFICIAL RULES & FORMATION</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-forest-800">📐 官方規則與標準陣型互動圖解</h2>
+                    <span class="text-xs font-black text-vitalorange-600 uppercase tracking-wider">UNIT 03 • HKMDA 2023 OFFICIAL RULES</span>
+                    <h1 class="text-2xl sm:text-3xl font-black text-forest-800 mt-0.5">📜 官方比賽規則與標準陣型圖解</h1>
+                    <p class="text-sm text-slate-600 mt-1">依據香港芬蘭木柱發展協會（HKMDA）2023 年官方比賽規則整理編製</p>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-600 font-bold">依據香港芬蘭木柱發展協會（HKMDA）2023 年官方比賽規則編製</p>
+                <span class="px-3.5 py-1.5 rounded-xl bg-forest-50 border border-forest-200 text-forest-800 text-xs font-black">
+                    標準場區：4 × 10 米 ｜ 投擲距離：3 – 4 米
+                </span>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <!-- 左側：可點擊的 1-12 號標準四排三角形起始陣型圖 -->
-                <div class="lg:col-span-6 bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 space-y-4">
+                <!-- 左側（5 欄）：互動式 1-12 號標準四排三角形陣型圖 -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-md border-2 border-birch-200 space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h3 class="text-lg sm:text-xl font-black text-forest-800">🔺 標準四排三角形起始陣型圖</h3>
-                        <span class="px-3 py-1 rounded-full bg-forest-50 text-forest-800 border border-forest-200 text-xs font-black">點擊任一木柱檢視戰術</span>
+                        <h2 class="text-lg font-black text-forest-800">🔺 標準四排三角形起始陣型</h2>
+                        <span class="px-2.5 py-1 rounded-full bg-birch-100 text-forest-800 text-xs font-black">點擊木柱看戰術</span>
                     </div>
 
-                    <!-- 場地與陣型視覺區 -->
-                    <div class="bg-gradient-to-b from-emerald-50 to-birch-50 rounded-2xl p-5 border-2 border-forest-600/25 space-y-4 text-center">
-                        <div class="flex items-center justify-between text-xs font-black text-forest-800 px-2">
-                            <span>🏟️ 標準比賽場區：4 × 10 米</span>
-                            <span>📏 正式投擲距離：3 – 4 米</span>
+                    <div class="bg-gradient-to-b from-forest-50 to-birch-50 rounded-2xl p-5 border-2 border-forest-600/25 space-y-4 text-center">
+                        <div class="flex items-center justify-between text-xs font-black text-forest-800">
+                            <span>🏟️ 場區 4 × 10 米</span>
+                            <span>📏 距離 3 – 4 米</span>
                         </div>
 
-                        <!-- 第四排（最後排）：7, 9, 8 -->
-                        <div class="space-y-2.5 py-2">
-                            <div class="text-[11px] font-bold text-slate-500">▲ 後排（遠離起點尺）</div>
-                            <div class="flex justify-center gap-2.5 sm:gap-3">
-                                <button type="button" onclick="inspectFormationPin(7)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">7</button>
-                                <button type="button" onclick="inspectFormationPin(9)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">9</button>
-                                <button type="button" onclick="inspectFormationPin(8)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">8</button>
+                        <!-- 第四排：7, 9, 8 -->
+                        <div class="space-y-2.5 py-1">
+                            <div class="text-[11px] font-bold text-slate-500">▲ 第四排（最遠排）</div>
+                            <div class="flex justify-center gap-2.5">
+                                <button type="button" onclick="inspectFormationPin(7)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">7</button>
+                                <button type="button" onclick="inspectFormationPin(9)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">9</button>
+                                <button type="button" onclick="inspectFormationPin(8)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">8</button>
                             </div>
                             <!-- 第三排：5, 11, 12, 6 -->
-                            <div class="flex justify-center gap-2.5 sm:gap-3">
-                                <button type="button" onclick="inspectFormationPin(5)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">5</button>
-                                <button type="button" onclick="inspectFormationPin(11)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">11</button>
-                                <button type="button" onclick="inspectFormationPin(12)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">12</button>
-                                <button type="button" onclick="inspectFormationPin(6)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">6</button>
+                            <div class="flex justify-center gap-2.5">
+                                <button type="button" onclick="inspectFormationPin(5)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">5</button>
+                                <button type="button" onclick="inspectFormationPin(11)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">11</button>
+                                <button type="button" onclick="inspectFormationPin(12)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">12</button>
+                                <button type="button" onclick="inspectFormationPin(6)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">6</button>
                             </div>
                             <!-- 第二排：3, 10, 4 -->
-                            <div class="flex justify-center gap-2.5 sm:gap-3">
-                                <button type="button" onclick="inspectFormationPin(3)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">3</button>
-                                <button type="button" onclick="inspectFormationPin(10)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">10</button>
-                                <button type="button" onclick="inspectFormationPin(4)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">4</button>
+                            <div class="flex justify-center gap-2.5">
+                                <button type="button" onclick="inspectFormationPin(3)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">3</button>
+                                <button type="button" onclick="inspectFormationPin(10)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">10</button>
+                                <button type="button" onclick="inspectFormationPin(4)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">4</button>
                             </div>
-                            <!-- 第一排（最前排）：1, 2 -->
-                            <div class="flex justify-center gap-2.5 sm:gap-3">
-                                <button type="button" onclick="inspectFormationPin(1)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">1</button>
-                                <button type="button" onclick="inspectFormationPin(2)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900">2</button>
+                            <!-- 第一排：1, 2 -->
+                            <div class="flex justify-center gap-2.5">
+                                <button type="button" onclick="inspectFormationPin(1)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">1</button>
+                                <button type="button" onclick="inspectFormationPin(2)" class="molkky-pin w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 font-mono-num">2</button>
                             </div>
-                            <div class="text-[11px] font-bold text-slate-500">▼ 前排（面向投擲起點尺）</div>
+                            <div class="text-[11px] font-bold text-slate-500">▼ 第一排（面向投擲起點尺）</div>
                         </div>
 
-                        <!-- 投擲起點尺示意 -->
                         <div class="pt-2 border-t-2 border-dashed border-forest-600/40">
-                            <div class="inline-block px-6 py-1.5 rounded-lg bg-amberwood-600 text-white text-xs font-black shadow">
-                                📏 投擲起點尺（距離第 1 排 3 – 4 米）
+                            <div class="inline-block px-5 py-1.5 rounded-xl bg-vitalorange-600 text-white text-xs font-black shadow">
+                                📏 投擲起點尺（距第一排 3 – 4 米）
                             </div>
                         </div>
                     </div>
 
-                    <!-- 木柱戰術解析提示盒 -->
-                    <div id="formationPinDetailBox" class="bg-birch-50 rounded-2xl p-4 border border-birch-300 text-sm text-slate-700">
-                        <span class="font-black text-forest-800">💡 戰術提示：</span>請點擊上方任一編號木柱（例如核心高分柱 <strong>11、12、10</strong> 或前排破陣柱 <strong>1、2</strong>），檢視該木柱的位置特性與投擲策略！
+                    <!-- 點擊木柱顯示編號分值與戰術解析 -->
+                    <div id="formationPinDetailBox" class="bg-birch-50 rounded-2xl p-4 border border-birch-300 text-sm text-slate-700 leading-relaxed">
+                        <span class="font-black text-forest-800">💡 互動提示：</span>請點擊上方任一編號木柱（第一排 1, 2；第二排 3, 10, 4；第三排 5, 11, 12, 6；第四排 7, 9, 8），立即查看該木柱分值與戰術解析！
                     </div>
                 </div>
 
-                <!-- 右側：重點比賽規則卡片 -->
-                <div class="lg:col-span-6 space-y-4">
+                <!-- 右側（7 欄）：關鍵比賽規則分類卡 -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- 規則卡 1 -->
                     <div class="bg-white rounded-2xl p-5 shadow-sm border-2 border-birch-200 space-y-1.5">
-                        <h4 class="font-black text-forest-800 text-base flex items-center gap-2"><span>🤾</span> 1. 下手投擲與木柱原地扶正</h4>
-                        <p class="text-sm text-slate-600 leading-relaxed">
-                            所有投擲<strong>必須採用「下手拋擲（Underhand）」</strong>，禁止過肩投擲或平推滾球。每次投擲結束計分後，所有倒下的木柱必須在<strong>「最後停止倒下的位置」直接原地垂直扶正</strong>（使陣型隨賽局進行逐漸擴散）。若木柱飛出界線，則在飛離界線處向場內縮進一支木柱距離扶正。
-                        </p>
+                        <h3 class="font-black text-forest-800 text-base flex items-center gap-2">
+                            <span>🤾</span> 1. 下手投擲、原地扶正與出界處理
+                        </h3>
+                        <ul class="text-sm text-slate-600 space-y-1 leading-relaxed list-disc pl-5">
+                            <li><strong>必須下手投擲（Underhand）</strong>：所有投擲皆須採用下手拋擲方式。</li>
+                            <li><strong>最後倒下位置原地扶正</strong>：每次投擲計分後，倒下的木柱均在「最後停止倒下的位置」直接垂直重新站立。</li>
+                            <li><strong>出界內縮一支木柱距離</strong>：若木柱飛出設定界線外，需回到剛飛離界線的點上，向場內縮進「一支木柱的距離」重新站立；若木柱或投擲棒出界後自然滾回場內並擊倒木柱則仍屬有效。</li>
+                        </ul>
                     </div>
 
+                    <!-- 規則卡 2 -->
                     <div class="bg-white rounded-2xl p-5 shadow-sm border-2 border-birch-200 space-y-1.5">
-                        <h4 class="font-black text-rose-700 text-base flex items-center gap-2"><span>⚠️</span> 2. 連續 3 次 0 分（Misthrow）出局規則</h4>
-                        <p class="text-sm text-slate-600 leading-relaxed">
-                            投擲後未擊倒任何木柱（或犯規如踩線、非下手投擲、錯順序）記為 <strong>0 分（Misthrow）</strong>。若同一隊伍在單局內<strong>連續 3 個回合皆得 0 分</strong>，該隊立即判定該局出局（若當時分數高於 25 分則降至 25 分保留，25 分以下保留原分），對手直接以 <strong>50 分</strong>勝出該局！
-                        </p>
+                        <h3 class="font-black text-rose-700 text-base flex items-center gap-2">
+                            <span>🚫</span> 2. Misthrow（未得分）與犯規判定
+                        </h3>
+                        <ul class="text-sm text-slate-600 space-y-1 leading-relaxed list-disc pl-5">
+                            <li><strong>Misthrow</strong>：投擲後沒有擊倒任何木柱（或木柱斜靠他物未完全貼地），該回合得 <strong>0 分</strong>。</li>
+                            <li><strong>犯規行為</strong>：包含<strong>踩線投擲、錯誤投擲順序、以非下手式投擲、選手缺席</strong>。</li>
+                            <li><strong>犯規罰則</strong>：犯規投擲一律計 <strong>0 分</strong>，且所有因該次犯規動作而倒下的木柱<strong>必須回復原位</strong>（不可於新位置扶正）。</li>
+                        </ul>
                     </div>
 
+                    <!-- 規則卡 3 -->
                     <div class="bg-white rounded-2xl p-5 shadow-sm border-2 border-birch-200 space-y-1.5">
-                        <h4 class="font-black text-amberwood-700 text-base flex items-center gap-2"><span>🎯</span> 3. 和局決勝：Penalty Throw (4米柱 PK 戰)</h4>
-                        <p class="text-sm text-slate-600 leading-relaxed">
-                            若賽制結束出現平手（例如兩局總得分相同），則進行 <strong>Penalty Throw (PT 戰)</strong>：在場中直線擺放兩支木柱，<strong>前柱距起點尺 3.5 米（障礙柱，不可擊倒）</strong>、<strong>後柱距起點尺 4.0 米（目標柱）</strong>。在不擊倒 3.5 米柱的前提下擊倒 4 米柱即算成功！
-                        </p>
+                        <h3 class="font-black text-forest-800 text-base flex items-center gap-2">
+                            <span>🏁</span> 3. 每局結束條件（50 分制勝與出局規定）
+                        </h3>
+                        <ul class="text-sm text-slate-600 space-y-1 leading-relaxed list-disc pl-5">
+                            <li><strong>精準 50 分</strong>：其中一方剛好獲得 50 分，立即獲勝該局。</li>
+                            <li><strong>連續 3 次 0 分出局</strong>：有隊伍連續三次投擲均得 0 分時，分數高於 25 分者降至 25 分出局（25 分以下保留原分），對手分數立即變成 <strong>50 分</strong>勝出該局。</li>
+                            <li><strong>第三次超過 50 分</strong>：同一局內第三次投擲令分數超過 50 分者，分數跌至 25 分出局，同時令對手立即變成 <strong>50 分</strong>勝出該局。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 規則卡 4：和局決定方法 -->
+                    <div class="bg-birch-50 rounded-2xl p-5 shadow-sm border-2 border-birch-300 space-y-2">
+                        <h3 class="font-black text-vitalorange-700 text-base flex items-center gap-2">
+                            <span>⚖️</span> 4. 和局決定方法：Penalty Throw ＆ Mini Molkky Match
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-700">
+                            <div class="bg-white p-3.5 rounded-xl border border-birch-200 space-y-1">
+                                <div class="font-black text-forest-800">🎯 Penalty Throw（互擲 4 米柱）</div>
+                                <p class="leading-relaxed">
+                                    在場區中線擺放兩支木柱：前柱距起點尺 <strong>3.5 米</strong>、後柱距 <strong>4 米</strong>。選手必須<strong>在沒有擊倒 3.5 米柱之下，直接擊倒 4 米柱</strong>才算成功；若第一階段同分則進入一對一驟死賽。
+                                </p>
+                            </div>
+                            <div class="bg-white p-3.5 rounded-xl border border-birch-200 space-y-1">
+                                <div class="font-black text-forest-800">⚡ Mini Molkky Match（迷你賽）</div>
+                                <p class="leading-relaxed">
+                                    木柱排列與計分規則與正式賽相同（距離 3–4 米），雙方各有<strong>連續 5 個回合</strong>投擲木棒（不需輪流投擲），加總 5 回合獲得最高總得分者為勝方。
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 單元底部上一頁 / 下一頁導引按鈕 -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t-2 border-birch-200">
+                <button type="button" onclick="switchTab('adaptive')"
+                    class="px-5 py-3 rounded-2xl bg-birch-100 hover:bg-birch-200 text-forest-800 font-black text-sm border border-birch-300 transition flex items-center gap-2">
+                    <span>⬅</span>
+                    <span>上一單元：♿ 適應體育與任務卡</span>
+                </button>
+                <span class="text-xs font-bold text-slate-500 hidden sm:inline">單元 3 / 4：官方規則圖解</span>
+                <button type="button" onclick="switchTab('scoreboard')"
+                    class="px-6 py-3 rounded-2xl bg-vitalorange-600 hover:bg-vitalorange-700 text-white font-black text-sm shadow-md transition flex items-center gap-2">
+                    <span>下一單元：🏆 比賽計分系統</span>
+                    <span>➔</span>
+                </button>
+            </div>
         </section>
 
-        <!-- ===================================================================== -->
-        <!-- 區塊 4：即時比賽計分系統 (Scoreboard & Official Rules Engine)           -->
-        <!-- ===================================================================== -->
-        <section id="sec-scoreboard" class="scroll-mt-24 space-y-6">
-            <div class="flex flex-wrap items-end justify-between gap-2 border-b-2 border-birch-300 pb-3">
+        <!-- ================================================================= -->
+        <!-- 分頁四：🏆 比賽計分系統 (scoreboard)                              -->
+        <!-- ================================================================= -->
+        <section id="panel-scoreboard" class="hidden tab-panel-animate space-y-6">
+            <!-- 單元標題與快捷工具列 -->
+            <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-md border-2 border-birch-200 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <span class="text-xs font-black text-amberwood-700 uppercase tracking-wider">04 • LIVE SCOREBOARD SYSTEM</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-forest-800">🏆 芬蘭撞柱即時比賽計分系統</h2>
+                    <span class="text-xs font-black text-vitalorange-600 uppercase tracking-wider">UNIT 04 • LIVE SCOREBOARD SYSTEM</span>
+                    <h1 class="text-2xl sm:text-3xl font-black text-forest-800 mt-0.5">🏆 芬蘭撞柱即時比賽計分系統</h1>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button type="button" onclick="openPtModal()"
-                        class="px-4 py-2 rounded-xl bg-amberwood-600 hover:bg-amberwood-700 text-white font-black text-xs sm:text-sm shadow transition">
-                        🎯 和局 Penalty Throw (4米柱 PK)
+                        class="px-4 py-2.5 rounded-xl bg-vitalorange-600 hover:bg-vitalorange-700 text-white font-black text-xs sm:text-sm shadow transition">
+                        🎯 和局 PT 戰 (4米柱 PK)
                     </button>
                     <button type="button" onclick="startNewSet()"
-                        class="px-4 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-white font-bold text-xs sm:text-sm shadow transition">
+                        class="px-4 py-2.5 rounded-xl bg-forest-600 hover:bg-forest-700 text-white font-bold text-xs sm:text-sm shadow transition">
                         🔄 新開一局
                     </button>
                     <button type="button" onclick="resetFullMatch()"
-                        class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs sm:text-sm transition">
-                        🗑️ 重置整場比賽
+                        class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs sm:text-sm transition">
+                        🗑️ 重設比賽
                     </button>
                 </div>
             </div>
@@ -661,47 +833,47 @@
             <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-md border-2 border-birch-200 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label for="selectTeamCount" class="block text-xs font-black text-forest-800 mb-1.5">👥 參賽隊伍數量</label>
+                        <label for="selectTeamCount" class="block text-xs font-black text-forest-800 mb-1.5">👥 參賽隊伍數量（2～4 隊）</label>
                         <select id="selectTeamCount" onchange="changeTeamCount(this.value)"
-                            class="w-full px-3.5 py-2.5 rounded-xl bg-birch-50 border-2 border-birch-300 text-sm font-black text-forest-900">
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-birch-50 border-2 border-birch-200 text-sm font-black text-forest-800">
                             <option value="2" selected>2 隊對抗（標準 1v1 / 雙人對抗）</option>
                             <option value="3">3 隊循環（1 ON 1 ON 1 模式）</option>
                             <option value="4">4 隊大混戰</option>
                         </select>
                     </div>
                     <div>
-                        <label for="selectMatchFormat" class="block text-xs font-black text-forest-800 mb-1.5">📋 比賽賽制規則</label>
+                        <label for="selectMatchFormat" class="block text-xs font-black text-forest-800 mb-1.5">📋 比賽賽制選擇</label>
                         <select id="selectMatchFormat" onchange="changeMatchFormat(this.value)"
-                            class="w-full px-3.5 py-2.5 rounded-xl bg-birch-50 border-2 border-birch-300 text-sm font-black text-forest-900">
-                            <option value="single" selected>單局體驗賽（先精準 50 分者勝）</option>
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-birch-50 border-2 border-birch-200 text-sm font-black text-forest-800">
+                            <option value="single" selected>單局練習賽（先精準 50 分者勝）</option>
                             <option value="bo3">三局兩勝制（率先贏得 2 局者勝）</option>
                             <option value="twoSetTotal">兩局總得分制（加總兩局積分高者勝）</option>
                         </select>
                     </div>
                     <div class="bg-forest-50 rounded-2xl p-3 border border-forest-200 flex items-center justify-between">
                         <div>
-                            <div class="text-xs font-bold text-forest-700">目前賽局進度</div>
-                            <div class="text-lg font-black text-forest-900">第 <span id="displayCurrentSet">1</span> 局 • 第 <span id="displayCurrentRound">1</span> 回合</div>
+                            <div class="text-xs font-bold text-forest-600">目前賽局進度</div>
+                            <div class="text-lg font-black text-forest-800 font-mono-num">第 <span id="displayCurrentSet">1</span> 局 • 第 <span id="displayCurrentRound">1</span> 回合</div>
                         </div>
                         <div class="text-right">
                             <div class="text-xs font-bold text-slate-500">輪到投擲</div>
-                            <div id="displayActiveTeamName" class="text-sm font-black text-amberwood-700">隊伍 A</div>
+                            <div id="displayActiveTeamName" class="text-sm font-black text-vitalorange-600">隊伍 A</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 可自訂隊名與隊員欄位 -->
+                <!-- 自訂隊伍與隊員名稱 -->
                 <div id="teamConfigGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-birch-200">
-                    <!-- 由 JS 動態生成 -->
+                    <!-- 由 JS 生成 -->
                 </div>
             </div>
 
-            <!-- 單局 / 全場勝利結算橫幅 -->
-            <div id="matchWinnerBanner" class="hidden bg-gradient-to-r from-amberwood-500 via-amberwood-600 to-forest-700 text-white rounded-3xl p-6 shadow-xl border-4 border-birch-100">
+            <!-- 每局 / 全場勝利結算橫幅 -->
+            <div id="matchWinnerBanner" class="hidden bg-gradient-to-r from-vitalorange-600 via-vitalorange-500 to-forest-700 text-white rounded-3xl p-6 shadow-xl border-4 border-birch-100">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="space-y-1">
                         <span class="px-3 py-1 rounded-full bg-white/20 text-xs font-black">OFFICIAL RESULT • 賽局結算</span>
-                        <h3 id="winnerBannerTitle" class="text-2xl sm:text-3xl font-black">🏆 恭喜隊伍獲得勝利！</h3>
+                        <h2 id="winnerBannerTitle" class="text-2xl sm:text-3xl font-black">🏆 恭喜隊伍獲得勝利！</h2>
                         <p id="winnerBannerDesc" class="text-sm text-birch-50 font-bold"></p>
                     </div>
                     <div id="winnerBannerActions" class="flex flex-wrap gap-2.5">
@@ -710,25 +882,25 @@
                 </div>
             </div>
 
-            <!-- 各隊即時分數看板卡片 -->
+            <!-- 即時各隊計分板（顯示總局數/總分、目前分數、距離 50 分還差幾分、連續 0 分 3 顆警示燈） -->
             <div id="scoreboardCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- 由 JS 動態渲染各隊分數卡 -->
+                <!-- 由 JS 渲染 -->
             </div>
 
-            <!-- 計分操作面板 + 統計與歷史紀錄 -->
+            <!-- 雙模式分數輸入台 + 統計表與逐回合歷史紀錄 -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <!-- 左側（7欄）：雙模式計分輸入控制台 -->
+                <!-- 左側（7 欄）：雙模式分數輸入台 -->
                 <div class="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-6 shadow-md border-2 border-birch-200 space-y-5">
                     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-birch-200 pb-3">
                         <div>
-                            <span class="text-xs font-black text-amberwood-700">ACTIVE THROWER</span>
-                            <h3 class="text-xl font-black text-forest-800">🎯 輪到：<span id="consoleTeamTitle" class="text-amberwood-600">隊伍 A</span></h3>
+                            <span class="text-xs font-black text-vitalorange-600">ACTIVE THROWER</span>
+                            <h2 class="text-xl font-black text-forest-800">🎯 輪到：<span id="consoleTeamTitle" class="text-vitalorange-600">隊伍 A</span></h2>
                         </div>
                         <!-- 模式切換按鈕 -->
-                        <div class="flex rounded-xl bg-birch-100 p-1 border border-birch-300">
+                        <div class="flex rounded-xl bg-birch-100 p-1 border border-birch-200">
                             <button type="button" id="btnModePins" onclick="switchInputMode('pins')"
-                                class="px-3 py-1.5 rounded-lg text-xs font-black bg-forest-800 text-white shadow transition">
-                                🪵 互動木柱盤
+                                class="px-3 py-1.5 rounded-lg text-xs font-black bg-forest-600 text-white shadow transition">
+                                🪵 互動木柱點選盤
                             </button>
                             <button type="button" id="btnModeKeypad" onclick="switchInputMode('keypad')"
                                 class="px-3 py-1.5 rounded-lg text-xs font-black text-forest-800 hover:bg-birch-200 transition">
@@ -740,26 +912,25 @@
                     <!-- 模式 A：互動木柱點選盤 -->
                     <div id="panelModePins" class="space-y-4">
                         <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
-                            <span>請點選本回合<strong>完全倒地</strong>的木柱（可多選）：</span>
+                            <span>請點選倒下的 <strong>1～12 號木柱</strong>（可多選），系統自動依官方規則計算得分：</span>
                             <button type="button" onclick="clearSelectedPins()" class="text-rose-600 font-bold hover:underline">清除已選木柱</button>
                         </div>
 
-                        <!-- 1-12 號木柱按鈕網格 -->
                         <div id="interactivePinGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-3 py-2 justify-items-center">
                             <!-- 由 JS 生成 1-12 號木柱 -->
                         </div>
 
-                        <!-- 即時試算預覽框 -->
-                        <div id="pinCalculationPreview" class="bg-birch-50 rounded-2xl p-4 border-2 border-birch-300 flex flex-wrap items-center justify-between gap-3">
+                        <!-- 即時試算確認區 -->
+                        <div class="bg-birch-50 rounded-2xl p-4 border-2 border-birch-200 flex flex-wrap items-center justify-between gap-3">
                             <div>
-                                <div class="text-xs font-bold text-slate-500">本回合預計得分與結果試算：</div>
+                                <div class="text-xs font-bold text-slate-500">本回合得分即時試算：</div>
                                 <div id="previewFormulaText" class="text-sm sm:text-base font-black text-forest-800 mt-0.5">
                                     尚未點選木柱（若直接確認將計為 0 分 Misthrow）
                                 </div>
                             </div>
                             <button type="button" onclick="confirmPinThrow()"
-                                class="px-6 py-3 rounded-2xl bg-forest-700 hover:bg-forest-800 text-white font-black text-sm sm:text-base shadow-lg transition transform active:scale-95">
-                                ✓ 確認計分
+                                class="px-6 py-3 rounded-2xl bg-forest-600 hover:bg-forest-700 text-white font-black text-sm sm:text-base shadow-lg transition transform active:scale-95">
+                                ✓ 確認送出得分
                             </button>
                         </div>
                     </div>
@@ -767,31 +938,31 @@
                     <!-- 模式 B：快速數字鍵盤 -->
                     <div id="panelModeKeypad" class="hidden space-y-4">
                         <p class="text-xs text-slate-600">直接點擊本回合最終計算出的得分（0 分代表未擊倒任何木柱 Misthrow）：</p>
-                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2.5">
+                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2.5 font-mono-num">
                             <button type="button" onclick="recordThrowScore(0, 'Misthrow (0分)')"
-                                class="col-span-2 sm:col-span-1 py-3.5 rounded-2xl bg-rose-100 hover:bg-rose-200 border-2 border-rose-300 text-rose-800 font-black text-base shadow-sm transition">
+                                class="col-span-2 sm:col-span-1 py-3.5 rounded-2xl bg-rose-100 hover:bg-rose-200 border-2 border-rose-300 text-rose-800 font-black text-sm shadow-sm transition font-sans">
                                 0 分
                             </button>
-                            <button type="button" onclick="recordThrowScore(1, '快速輸入 1 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">1</button>
-                            <button type="button" onclick="recordThrowScore(2, '快速輸入 2 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">2</button>
-                            <button type="button" onclick="recordThrowScore(3, '快速輸入 3 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">3</button>
-                            <button type="button" onclick="recordThrowScore(4, '快速輸入 4 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">4</button>
-                            <button type="button" onclick="recordThrowScore(5, '快速輸入 5 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">5</button>
-                            <button type="button" onclick="recordThrowScore(6, '快速輸入 6 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">6</button>
-                            <button type="button" onclick="recordThrowScore(7, '快速輸入 7 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">7</button>
-                            <button type="button" onclick="recordThrowScore(8, '快速輸入 8 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">8</button>
-                            <button type="button" onclick="recordThrowScore(9, '快速輸入 9 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">9</button>
-                            <button type="button" onclick="recordThrowScore(10, '快速輸入 10 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">10</button>
-                            <button type="button" onclick="recordThrowScore(11, '快速輸入 11 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">11</button>
-                            <button type="button" onclick="recordThrowScore(12, '快速輸入 12 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-amberwood-500 hover:text-white border-2 border-birch-300 font-black text-lg transition">12</button>
+                            <button type="button" onclick="recordThrowScore(1, '快速輸入 1 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">1</button>
+                            <button type="button" onclick="recordThrowScore(2, '快速輸入 2 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">2</button>
+                            <button type="button" onclick="recordThrowScore(3, '快速輸入 3 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">3</button>
+                            <button type="button" onclick="recordThrowScore(4, '快速輸入 4 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">4</button>
+                            <button type="button" onclick="recordThrowScore(5, '快速輸入 5 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">5</button>
+                            <button type="button" onclick="recordThrowScore(6, '快速輸入 6 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">6</button>
+                            <button type="button" onclick="recordThrowScore(7, '快速輸入 7 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">7</button>
+                            <button type="button" onclick="recordThrowScore(8, '快速輸入 8 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">8</button>
+                            <button type="button" onclick="recordThrowScore(9, '快速輸入 9 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">9</button>
+                            <button type="button" onclick="recordThrowScore(10, '快速輸入 10 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">10</button>
+                            <button type="button" onclick="recordThrowScore(11, '快速輸入 11 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">11</button>
+                            <button type="button" onclick="recordThrowScore(12, '快速輸入 12 分')" class="py-3.5 rounded-2xl bg-birch-50 hover:bg-vitalorange-600 hover:text-white border-2 border-birch-200 font-black text-lg transition">12</button>
                         </div>
                     </div>
 
-                    <!-- 犯規與復原操作列 -->
+                    <!-- 犯規（0分並復原）與復原上一步（Undo） -->
                     <div class="pt-3 border-t border-birch-200 flex flex-wrap items-center justify-between gap-2">
                         <button type="button" onclick="recordFoulThrow()"
                             class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm shadow transition">
-                            🚫 犯規投擲（計 0 分並提示木柱復原）
+                            ⚠️ 犯規（0分並復原木柱）
                         </button>
                         <button type="button" id="btnUndo" onclick="undoLastAction()" disabled
                             class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 disabled:opacity-40 text-slate-800 font-black text-xs sm:text-sm transition">
@@ -800,13 +971,13 @@
                     </div>
                 </div>
 
-                <!-- 右側（5欄）：局數統計表、雲端上傳與逐回合歷史紀錄 -->
+                <!-- 右側（5 欄）：局數統計表、雲端上傳與本局逐回合紀錄 -->
                 <div class="lg:col-span-5 space-y-5">
-                    <!-- 多局總積分統計表 -->
+                    <!-- 局數與總積分統計表 + 上傳與 CSV 匯出 -->
                     <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-birch-200 space-y-3">
                         <div class="flex items-center justify-between">
                             <h3 class="font-black text-forest-800 text-base">📊 局數與總積分統計表</h3>
-                            <span id="scoreSheetBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-birch-100 text-forest-800">雲端同步就緒</span>
+                            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-birch-100 text-forest-800">官方計分表</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left border-collapse">
@@ -819,28 +990,28 @@
                                         <th class="py-2 pl-2 text-right">累計總分</th>
                                     </tr>
                                 </thead>
-                                <tbody id="setSummaryBody" class="divide-y divide-birch-100 font-bold">
+                                <tbody id="setSummaryBody" class="divide-y divide-birch-100 font-bold font-mono-num">
                                     <!-- 由 JS 渲染 -->
                                 </tbody>
                             </table>
                         </div>
                         <div class="pt-3 border-t border-birch-200 flex flex-col sm:flex-row gap-2">
                             <button type="button" onclick="uploadMatchToSheet(this)"
-                                class="flex-1 py-2.5 px-3 rounded-xl bg-forest-700 hover:bg-forest-800 text-white font-black text-xs sm:text-sm shadow transition">
+                                class="flex-1 py-2.5 px-3 rounded-xl bg-forest-600 hover:bg-forest-700 text-white font-black text-xs sm:text-sm shadow transition">
                                 ☁️ 上傳本場比賽成績至 Google Sheet
                             </button>
                             <button type="button" onclick="exportMatchCsv()"
                                 class="py-2.5 px-3 rounded-xl bg-birch-100 hover:bg-birch-200 text-forest-800 font-bold text-xs sm:text-sm border border-birch-300 transition">
-                                📥 匯出 CSV
+                                📥 匯出比賽 CSV
                             </button>
                         </div>
                     </div>
 
-                    <!-- 逐回合歷史紀錄 -->
+                    <!-- 本局逐回合紀錄 -->
                     <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-birch-200 space-y-3">
                         <div class="flex items-center justify-between">
-                            <h3 class="font-black text-forest-800 text-base">📜 逐回合投擲歷史紀錄</h3>
-                            <span id="historyCountTag" class="text-xs font-bold text-slate-500">0 筆紀錄</span>
+                            <h3 class="font-black text-forest-800 text-base">📜 本局逐回合投擲紀錄</h3>
+                            <span id="historyCountTag" class="text-xs font-bold text-slate-500 font-mono-num">0 筆紀錄</span>
                         </div>
                         <div id="throwHistoryList" class="max-h-64 overflow-y-auto space-y-2 pr-1 text-xs">
                             <div class="text-center py-6 text-slate-400">尚未有投擲紀錄，請由左側控制台開始計分</div>
@@ -848,50 +1019,63 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 單元底部上一頁 / 下一頁導引按鈕 -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t-2 border-birch-200">
+                <button type="button" onclick="switchTab('rules')"
+                    class="px-5 py-3 rounded-2xl bg-birch-100 hover:bg-birch-200 text-forest-800 font-black text-sm border border-birch-300 transition flex items-center gap-2">
+                    <span>⬅</span>
+                    <span>上一單元：📜 官方規則圖解</span>
+                </button>
+                <span class="text-xs font-bold text-slate-500 hidden sm:inline">單元 4 / 4：比賽計分系統</span>
+                <button type="button" onclick="switchTab('intro')"
+                    class="px-6 py-3 rounded-2xl bg-forest-600 hover:bg-forest-700 text-white font-black text-sm shadow-md transition flex items-center gap-2">
+                    <span>回到首頁：🏠 認識芬蘭撞柱</span>
+                    <span>↺</span>
+                </button>
+            </div>
         </section>
 
     </main>
 
     <!-- 頁尾 -->
-    <footer class="bg-forest-900 text-birch-200 py-6 px-4 text-center text-xs space-y-1 border-t-4 border-amberwood-600 mt-12">
+    <footer class="bg-forest-900 text-birch-100 py-5 px-4 text-center text-xs space-y-1 border-t-4 border-birch-300 mt-8">
         <p class="font-black text-white text-sm">芬蘭撞柱 MÖLKKY — 大學生適應體育互動體驗與比賽計分系統</p>
-        <p>比賽規則參考：香港芬蘭木柱發展協會（HKMDA）2023 年官方比賽規則 • 專為大專院校融合體育教學設計</p>
+        <p>比賽規則依循香港芬蘭木柱發展協會（HKMDA）2023 年官方比賽規則 • 專為大專院校融合體育課程設計</p>
     </footer>
 
     <!-- ===================================================================== -->
-    <!-- 彈窗 1：和局 Penalty Throw (4米柱 PK 戰) 計分器 Modal                  -->
+    <!-- 彈窗 1：和局 PT 戰（4 米柱 PK）計分器 Modal                            -->
     <!-- ===================================================================== -->
     <div id="ptModal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border-4 border-amberwood-500 space-y-5 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border-4 border-vitalorange-500 space-y-5 max-h-[90vh] overflow-y-auto">
             <div class="flex items-start justify-between gap-3 border-b border-birch-200 pb-3">
                 <div>
-                    <span class="px-2.5 py-0.5 rounded-full bg-amberwood-600 text-white text-xs font-black">TIE-BREAKER • 官方和局決勝</span>
-                    <h3 class="text-xl sm:text-2xl font-black text-forest-800 mt-1">🎯 Penalty Throw（互擲 4 米柱 PK 戰）</h3>
+                    <span class="px-2.5 py-0.5 rounded-full bg-vitalorange-600 text-white text-xs font-black">TIE-BREAKER • 官方和局決勝</span>
+                    <h3 class="text-xl sm:text-2xl font-black text-forest-800 mt-1">🎯 和局 PT 戰（互擲 4 米柱 PK 計分器）</h3>
                 </div>
                 <button type="button" onclick="closePtModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 font-black text-slate-600">✕</button>
             </div>
 
-            <!-- 場地規則示意 -->
+            <!-- 場地示意 -->
             <div class="bg-birch-50 rounded-2xl p-4 border border-birch-300 space-y-2 text-xs sm:text-sm">
-                <div class="font-black text-forest-800">📏 PK 戰場地擺設與判定規則：</div>
+                <div class="font-black text-forest-800">📏 PK 戰場地擺設與判定：</div>
                 <div class="flex flex-wrap items-center justify-around gap-2 py-2 bg-white rounded-xl border border-birch-200 font-black text-center px-3">
                     <span class="px-2.5 py-1 rounded bg-forest-800 text-white">起點尺 (0m)</span>
                     <span>───▶</span>
-                    <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-800 border border-rose-300">🚫 3.5m 障礙柱（不可擊倒）</span>
+                    <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-800 border border-rose-300">🚫 3.5m 柱（不可擊中）</span>
                     <span>───▶</span>
-                    <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">🎯 4.0m 目標柱（直接擊倒）</span>
+                    <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">🎯 4.0m 柱（直接擊倒）</span>
                 </div>
                 <p class="text-slate-600">
-                    • <strong>第一階段</strong>：雙方依人數輪流投擲（單人各 3 次、雙人各 4 次、三人各 3 次、四人各 4 次），成功次數多者勝。<br>
-                    • <strong>第二階段驟死賽</strong>：若第一階段仍平手，進入一對一驟死賽，直至同輪出現一方成功而另一方失敗即分出勝負！
+                    在沒有擊倒 3.5 米木柱之下擊倒 4 米木柱為成功；第一階段依隊伍人數輪流投擲（單人各 3 次、雙人各 4 次、三人各 3 次、四人各 4 次），同分則進入第二階段驟死賽。
                 </p>
             </div>
 
-            <!-- 階段切換與計分區 -->
             <div class="flex items-center justify-between gap-2">
-                <span id="ptStageLabel" class="px-3 py-1 rounded-xl bg-forest-700 text-white text-xs font-black">目前階段：第一階段（輪流投擲）</span>
+                <span id="ptStageLabel" class="px-3 py-1 rounded-xl bg-forest-600 text-white text-xs font-black">目前階段：第一階段（輪流投擲）</span>
                 <div class="flex gap-2">
-                    <button type="button" onclick="togglePtStage()" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs">
+                    <button type="button" onclick="togglePtStage()" class="px-3 py-1.5 rounded-xl bg-orange-100 hover:bg-orange-200 text-vitalorange-700 font-bold text-xs">
                         ⚡ 切換第一階段 / 驟死賽
                     </button>
                     <button type="button" onclick="resetPtState()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
@@ -901,10 +1085,9 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- PK 隊伍 1 -->
-                <div class="bg-birch-50 rounded-2xl p-4 border-2 border-birch-300 space-y-3 text-center">
+                <div class="bg-birch-50 rounded-2xl p-4 border-2 border-birch-200 space-y-3 text-center">
                     <div id="ptTeamName0" class="font-black text-lg text-forest-800">隊伍 A</div>
-                    <div class="text-4xl font-black text-amberwood-600"><span id="ptHits0">0</span> <span class="text-sm text-slate-500">次成功</span></div>
+                    <div class="text-4xl font-black text-vitalorange-600 font-mono-num"><span id="ptHits0">0</span> <span class="text-sm text-slate-500 font-sans">次成功</span></div>
                     <div id="ptLog0" class="min-h-[28px] flex flex-wrap justify-center gap-1.5"></div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button type="button" onclick="recordPtShot(0, true)" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow">✓ 成功擊倒 4m</button>
@@ -912,10 +1095,9 @@
                     </div>
                 </div>
 
-                <!-- PK 隊伍 2 -->
-                <div class="bg-birch-50 rounded-2xl p-4 border-2 border-birch-300 space-y-3 text-center">
+                <div class="bg-birch-50 rounded-2xl p-4 border-2 border-birch-200 space-y-3 text-center">
                     <div id="ptTeamName1" class="font-black text-lg text-forest-800">隊伍 B</div>
-                    <div class="text-4xl font-black text-amberwood-600"><span id="ptHits1">0</span> <span class="text-sm text-slate-500">次成功</span></div>
+                    <div class="text-4xl font-black text-vitalorange-600 font-mono-num"><span id="ptHits1">0</span> <span class="text-sm text-slate-500 font-sans">次成功</span></div>
                     <div id="ptLog1" class="min-h-[28px] flex flex-wrap justify-center gap-1.5"></div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button type="button" onclick="recordPtShot(1, true)" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow">✓ 成功擊倒 4m</button>
@@ -930,30 +1112,29 @@
     <!-- 彈窗 2：Google Sheet 雲端連動設定精靈 Modal                            -->
     <!-- ===================================================================== -->
     <div id="sheetConfigModal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border-4 border-birch-400 space-y-5 max-h-[92vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border-4 border-birch-300 space-y-5 max-h-[92vh] overflow-y-auto">
             <div class="flex items-start justify-between gap-3 border-b border-birch-200 pb-3">
                 <div>
-                    <span class="px-2.5 py-0.5 rounded-full bg-forest-700 text-white text-xs font-black">CLOUD SYNC • 教師雲端試算表連動</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-forest-600 text-white text-xs font-black">CLOUD SYNC • 教師雲端試算表連動</span>
                     <h3 class="text-xl sm:text-2xl font-black text-forest-800 mt-1">☁️ Google Sheet 雲端連動設定精靈</h3>
                 </div>
                 <button type="button" onclick="closeSheetModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 font-black text-slate-600">✕</button>
             </div>
 
-            <!-- 網址設定與測試列 -->
-            <div class="bg-birch-50 rounded-2xl p-4 sm:p-5 border-2 border-birch-300 space-y-3">
+            <div class="bg-birch-50 rounded-2xl p-4 sm:p-5 border-2 border-birch-200 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <label for="inputGasUrl" class="text-sm font-black text-forest-800">🔗 貼上 Google Apps Script Web App 網址（以 /exec 結尾）：</label>
                     <span id="modalSheetStatusTag" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-slate-200 text-slate-700">尚未設定網址</span>
                 </div>
                 <input type="url" id="inputGasUrl" placeholder="https://script.google.com/macros/s/AKfycb.../exec"
-                    class="w-full px-4 py-3 rounded-xl bg-white border-2 border-birch-300 text-sm font-mono focus:outline-none focus:border-forest-600">
+                    class="w-full px-4 py-3 rounded-xl bg-white border-2 border-birch-200 text-sm font-mono focus:outline-none focus:border-forest-600">
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button" onclick="saveGasUrl()"
-                        class="px-5 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-white font-black text-sm shadow transition">
+                        class="px-5 py-2.5 rounded-xl bg-forest-600 hover:bg-forest-700 text-white font-black text-sm shadow transition">
                         💾 儲存網址
                     </button>
                     <button type="button" id="btnTestSheet" onclick="testSheetConnection()"
-                        class="px-4 py-2.5 rounded-xl bg-amberwood-600 hover:bg-amberwood-700 text-white font-bold text-sm shadow transition">
+                        class="px-4 py-2.5 rounded-xl bg-vitalorange-600 hover:bg-vitalorange-700 text-white font-bold text-sm shadow transition">
                         🚀 發送測試連線資料
                     </button>
                     <button type="button" onclick="clearGasUrl()"
@@ -963,23 +1144,21 @@
                 </div>
             </div>
 
-            <!-- 4 步驟設定教學 -->
             <div class="bg-forest-50 rounded-2xl p-4 border border-forest-200 space-y-2 text-xs sm:text-sm text-slate-700">
                 <div class="font-black text-forest-800">📖 4 步驟快速建立課程雲端試算表：</div>
                 <ol class="list-decimal pl-5 space-y-1.5">
-                    <li>新增一個 <strong>Google 試算表</strong>，點選上方選單 <strong>「擴充功能」➔「Apps Script」</strong>。</li>
-                    <li>刪除預設內容，點擊下方<strong>「📋 一鍵複製 Code.gs 程式碼」</strong>並完整貼上後按儲存。</li>
+                    <li>開啟 <strong>Google 試算表</strong>，點選上方選單 <strong>「擴充功能」➔「Apps Script」</strong>。</li>
+                    <li>清空預設內容，點擊下方<strong>「📋 一鍵複製 Code.gs 程式碼」</strong>並貼上後儲存。</li>
                     <li>點選右上角<strong>「部署」➔「新增部署作業」</strong>，類型選擇<strong>「網頁應用程式」</strong>。</li>
-                    <li>將「誰可以存取」設為<strong>「所有人 (Anyone)」</strong>，完成授權後複製 <code>/exec</code> 網址貼入上方欄位即可！（程式會自動建立分頁並將合照存入 Google Drive）</li>
+                    <li>將「誰可以存取」設為<strong>「所有人 (Anyone)」</strong>，完成授權後複製 <code>/exec</code> 網址貼入上方欄位即可！（程式會自動建立 <code>學生體驗任務紀錄</code> 與 <code>比賽計分紀錄</code> 雙分頁並將合照存入 Google Drive）</li>
                 </ol>
             </div>
 
-            <!-- 內建 Code.gs 程式碼區 -->
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-black text-forest-800">💻 專用 Google Apps Script (`Code.gs`) 程式碼：</span>
+                    <span class="text-xs font-black text-forest-800">💻 完整 Google Apps Script (`Code.gs`) 程式碼：</span>
                     <button type="button" onclick="copyGasCode()"
-                        class="px-3.5 py-1.5 rounded-xl bg-amberwood-600 hover:bg-amberwood-700 text-white font-black text-xs shadow transition">
+                        class="px-3.5 py-1.5 rounded-xl bg-vitalorange-600 hover:bg-vitalorange-700 text-white font-black text-xs shadow transition">
                         📋 一鍵複製 Code.gs 程式碼
                     </button>
                 </div>
@@ -994,8 +1173,8 @@
       var sheet = ss.getSheetByName("學生體驗任務紀錄");
       if (!sheet) {
         sheet = ss.insertSheet("學生體驗任務紀錄");
-        sheet.appendRow(["時間戳記", "學生姓名", "學號", "班級組別", "完成任務清單", "完成數量", "心得與反思", "體驗合照雲端連結"]);
-        sheet.getRange(1, 1, 1, 8).setFontWeight("bold").setBackground("#D4E7DC");
+        sheet.appendRow(["時間戳記", "班級系級", "學號", "姓名", "組別隊名", "完成體驗任務清單", "完成數量", "學習心得與反思", "體驗合照雲端連結"]);
+        sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#D5E4DB");
       }
 
       var photoLink = "未上傳合照";
@@ -1006,7 +1185,7 @@
         var parts = data.photoBase64.split("base64,");
         var mime = parts[0].split(":")[1].split(";")[0];
         var bytes = Utilities.base64Decode(parts[1]);
-        var fileName = (data.classGroup || "課程") + "_" + (data.studentName || "學生") + "_" + Date.now() + ".jpg";
+        var fileName = (data.classDept || "課程") + "_" + (data.studentName || "學生") + "_" + Date.now() + ".jpg";
         var file = folder.createFile(Utilities.newBlob(bytes, mime, fileName));
         file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
         photoLink = file.getUrl();
@@ -1014,9 +1193,10 @@
 
       sheet.appendRow([
         timestamp,
-        data.studentName || "",
+        data.classDept || "",
         data.studentId || "",
-        data.classGroup || "",
+        data.studentName || "",
+        data.teamGroup || "",
         data.completedQuests || "",
         data.questRatio || "",
         data.reflection || "",
@@ -1027,7 +1207,7 @@
       if (!matchSheet) {
         matchSheet = ss.insertSheet("比賽計分紀錄");
         matchSheet.appendRow(["時間戳記", "紀錄類型", "賽制模式", "目前局數", "總回合數", "參賽隊伍與隊員", "各局比數明細", "累計總分與勝局", "領先或獲勝隊伍"]);
-        matchSheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#F5EFE6");
+        matchSheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#F2ECE1");
       }
       matchSheet.appendRow([
         timestamp,
@@ -1058,20 +1238,24 @@
     <!-- ===================================================================== -->
     <script>
         // ==========================================
-        // 1. 全域狀態定義
+        // 1. 全域狀態定義與常數
         // ==========================================
         const STORAGE_KEYS = {
-            GAS_URL: 'molkky_ape_gas_url_v2',
-            STUDENT_RECORDS: 'molkky_ape_student_records_v2'
+            GAS_URL: 'molkky_ape_gas_url_v3',
+            STUDENT_RECORDS: 'molkky_ape_student_records_v3'
         };
 
+        const TAB_KEYS = ['intro', 'adaptive', 'rules', 'scoreboard'];
+
         const QUEST_NAMES = [
-            '輪椅/坐姿視角投擲體驗',
-            '盲眼/視覺限制聽聲辨位挑戰',
-            '融合雙人合作策略賽'
+            '任務 1：輪椅/坐姿視角投擲',
+            '任務 2：盲眼聽聲辨位挑戰',
+            '任務 3：融合雙人合作策略賽'
         ];
 
         const appState = {
+            currentTab: 'intro',
+
             // 無障礙與語音
             highContrast: false,
             largeText: false,
@@ -1110,7 +1294,51 @@
         };
 
         // ==========================================
-        // 2. 無障礙模式與語音播報工具
+        // 2. 分頁切換引擎（每次僅顯示一個獨立單元頁面）
+        // ==========================================
+        function switchTab(tabKey) {
+            if (!TAB_KEYS.includes(tabKey)) return;
+            appState.currentTab = tabKey;
+
+            TAB_KEYS.forEach(key => {
+                const panel = document.getElementById(`panel-${key}`);
+                const navBtn = document.getElementById(`nav-tab-${key}`);
+                const mobileBtn = document.getElementById(`m-tab-${key}`);
+
+                const isActive = key === tabKey;
+
+                if (panel) {
+                    if (isActive) {
+                        panel.classList.remove('hidden');
+                        // 重新觸發淡入動畫
+                        panel.classList.remove('tab-panel-animate');
+                        void panel.offsetWidth;
+                        panel.classList.add('tab-panel-animate');
+                    } else {
+                        panel.classList.add('hidden');
+                    }
+                }
+
+                if (navBtn) {
+                    navBtn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    navBtn.className = isActive
+                        ? 'px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 bg-vitalorange-600 text-white shadow'
+                        : 'px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 text-birch-100 hover:bg-forest-700';
+                }
+
+                if (mobileBtn) {
+                    mobileBtn.className = isActive
+                        ? 'whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-vitalorange-600 text-white shadow transition'
+                        : 'whitespace-nowrap px-3.5 py-1.5 rounded-xl bg-forest-800 text-birch-100 hover:bg-forest-700 transition';
+                }
+            });
+
+            // 切換分頁時自動平滑捲動至頂端
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // 3. 無障礙模式與語音播報工具
         // ==========================================
         let toastTimer = null;
         function showToast(msg, icon = 'ℹ️') {
@@ -1127,13 +1355,13 @@
         function toggleHighContrast() {
             appState.highContrast = !appState.highContrast;
             document.body.classList.toggle('a11y-high-contrast', appState.highContrast);
-            showToast(appState.highContrast ? '已開啟高對比視覺模式' : '已恢復標準北歐色調', '🌓');
+            showToast(appState.highContrast ? '已開啟高對比模式' : '已恢復北歐樺木標準視覺', '🌓');
         }
 
         function toggleLargeText() {
             appState.largeText = !appState.largeText;
             document.documentElement.classList.toggle('a11y-large-text', appState.largeText);
-            showToast(appState.largeText ? '已開啟大字體閱讀模式' : '已恢復標準字體大小', '🔍');
+            showToast(appState.largeText ? '已開啟大字體模式' : '已恢復標準字體大小', '🔍');
         }
 
         function toggleSpeech() {
@@ -1153,37 +1381,35 @@
                     utter.rate = 1.05;
                     window.speechSynthesis.speak(utter);
                 }
-            } catch (e) {
-                // 忽略部分 iframe 沙盒禁用語音的錯誤
-            }
+            } catch (e) {}
         }
 
         // ==========================================
-        // 3. 適應體育調整策略頁籤 & 陣型圖解互動
+        // 4. 適應體育調整原則頁籤 & 官方陣型圖解互動
         // ==========================================
         const ADAPTIVE_GUIDES = {
             distance: {
                 title: '📏 距離與空間調整（Distance & Space Modification）',
                 items: [
-                    '• <strong>縮短投擲距離</strong>：正式賽為 3–4 公尺，適應體育課程可依學生上肢肌力與輪椅操作能力，調整為 <strong>1.5 公尺、2 公尺或 2.5 公尺</strong>多層次起點線。',
-                    '• <strong>坐姿與輪椅專屬投擲區</strong>：允許使用輪椅或折疊椅採坐姿投擲，並確保起點線後方有足夠輪椅迴轉與煞車固定空間。',
-                    '• <strong>增加木柱間距</strong>：初學階段可將起始三角形木柱間隔拉開 3–5 公分，降低擊中難度並提升成功體驗。'
+                    '• <strong>多層次起點線設定</strong>：正式賽為 3–4 公尺，適應體育課程可依輪椅操作能力與上肢肌力，設置 <strong>1.5 米、2 米、2.5 米</strong>多層次起點尺，讓每位學生皆有合理命中率。',
+                    '• <strong>輪椅與坐姿無障礙投擲區</strong>：保持起點線後方平坦寬敞，方便輪椅固定煞車或使用折疊椅採坐姿低重心下手投擲。',
+                    '• <strong>木柱間距彈性調整</strong>：初學階段可將三角形木柱間隔拉開 3–5 公分，降低單次擊中難度並提升成功成就感。'
                 ]
             },
             sensory: {
                 title: '🔔 感官與輔具提示（Sensory Cues & Assistive Devices）',
                 items: [
-                    '• <strong>高對比視覺輔助</strong>：針對低視能學生，可在木柱頂端貼上螢光黃或高對比大字數字貼紙，並在目標柱後方放置深色背景板。',
-                    '• <strong>聽聲辨位引導</strong>：針對視障或蒙眼體驗者，由同伴在目標木柱後方持續敲擊木棒或拍手，並以「時鐘方位法（例如 11 點鐘方向）」提供方向指引。',
-                    '• <strong>投擲斜坡輔具（Ramp）</strong>：若學生握力或手臂擺動受限，可使用軌道斜坡輔具將投擲木棒滾向目標區。'
+                    '• <strong>高對比視覺強化</strong>：針對低視能學生，可於目標木柱貼上螢光高對比貼紙，並開啟本網頁頂部「高對比」與「大字體」功能輔助計分。',
+                    '• <strong>聽聲辨位引導法</strong>：針對視障或蒙眼體驗者，由同伴在目標木柱後方持續敲擊木棒或拍手，並以「時鐘方位法（如 11 點鐘方向、2 米）」提供方位提示。',
+                    '• <strong>投擲斜坡軌道輔具（Ramp）</strong>：若上肢抓握或擺臂受限，可使用軌道輔具將投擲木棒平順滾向目標陣型。'
                 ]
             },
             grouping: {
                 title: '🤝 融合分組策略（Inclusive Grouping & Peer Support）',
                 items: [
-                    '• <strong>異質性融合編隊</strong>：將不同身體能力與特質的大學生混合編組，每位成員皆能發揮優勢（如算分策略、報位引導、精準狙擊）。',
-                    '• <strong>雙人合作角色分工</strong>：一人負責觀察陣型與計算剩餘分數（避免超過 50 分爆分），另一人專注執行下手投擲動作。',
-                    '• <strong>共同扶柱協作規範</strong>：投擲後全隊共同協助扶正木柱與撿拾投擲棒，培養團隊互助與運動禮儀。'
+                    '• <strong>異質性融合編隊</strong>：將不同身體能力與特質的大學生混合編組，讓每位成員都能在「準度投擲、陣型報位、心算策略」中扮演關鍵角色。',
+                    '• <strong>雙人合作角色互補</strong>：一人擔任「軍師」計算剩餘分數與評估單支/多支風險，另一人擔任「投手」執行下手投擲。',
+                    '• <strong>共同扶柱運動禮儀</strong>：每回合結束後全隊共同協助扶正倒下木柱與遞送投擲棒，培養團隊互助與共融文化。'
                 ]
             }
         };
@@ -1192,41 +1418,39 @@
             ['distance', 'sensory', 'grouping'].forEach(k => {
                 const btn = document.getElementById(`tab-adaptive-${k}`);
                 if (!btn) return;
-                if (k === key) {
-                    btn.className = 'px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition bg-forest-800 text-white shadow';
-                } else {
-                    btn.className = 'px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition bg-birch-100 text-forest-800 hover:bg-birch-200';
-                }
+                btn.className = k === key
+                    ? 'px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition bg-forest-600 text-white shadow'
+                    : 'px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition bg-birch-100 text-forest-800 hover:bg-birch-200';
             });
             const data = ADAPTIVE_GUIDES[key];
             document.getElementById('adaptiveTabContent').innerHTML = `
-                <h4 class="font-black text-forest-800 text-base mb-2">${data.title}</h4>
+                <h3 class="font-black text-forest-800 text-base mb-2">${data.title}</h3>
                 <ul class="space-y-1.5">${data.items.map(li => `<li>${li}</li>`).join('')}</ul>
             `;
         }
 
         const FORMATION_TIPS = {
-            1: '【1 號柱｜第 1 排左側】開局破陣首選！擊中前排 1 號與 2 號容易引發連鎖效應，開局建議瞄準前排中央縫隙衝散陣型以獲取多支分數。',
-            2: '【2 號柱｜第 1 排右側】開局破陣首選！右撇子選手從右側下手斜切進入 2 號與 4 號之間，能有效將高分柱推向外圍。',
-            3: '【3 號柱｜第 2 排左側】外側翼位柱，一旦陣型散開後，常成為需要「精準單支 3 分」收尾 50 分時的關鍵目標。',
-            4: '【4 號柱｜第 2 排右側】右側翼位柱，適合用來補足 46 分差 4 分的精準收尾。',
-            5: '【5 號柱｜第 3 排最左側】外圍中分柱，不易被誤撞，當需要 5 分時可從左側邊線直線狙擊。',
-            6: '【6 號柱｜第 3 排最右側】外圍中分柱，適合作為中段穩健累分的目標。',
-            7: '【7 號柱｜第 4 排最左側】後排高分角柱，前期被前方木柱保護，需從左側繞過前排或等陣型散開後狙擊。',
-            8: '【8 號柱｜第 4 排最右側】後排高分角柱，高風險高報酬目標，適合距離 50 分還差 8 分時單點突破。',
-            9: '【9 號柱｜第 4 排中央】最後排正中央高分柱，通常需要等前排被擊散後才能直接瞄準。',
-            10: '【10 號柱｜第 2 排正中央】陣型核心樞紐！被 1、2、3、4 號包圍，開局強力衝擊此區可一次擊倒大量木柱。',
-            11: '【11 號柱｜第 3 排左中】超高分核心柱（11 分），賽局中段若被撞出至空曠處，是快速拉近與 50 分距離的絕佳目標。',
-            12: '【12 號柱｜第 3 排右中】全場最高分木柱（12 分）！單支擊倒即可獲得 12 分，也是賽末最容易導致「超過 50 分退回 25 分」的雙面刃。'
+            1: '【編號 1 號柱｜分值：單支 1 分｜位置：第一排左側】開局破陣關鍵前鋒！瞄準 1 號與 2 號中間縫隙用力下手投擲，能有效衝散後方高分木柱群。',
+            2: '【編號 2 號柱｜分值：單支 2 分｜位置：第一排右側】開局破陣關鍵前鋒！右撇子選手從右側切入 2 號與 4 號之間，容易引發連鎖倒柱得分。',
+            3: '【編號 3 號柱｜分值：單支 3 分｜位置：第二排左側】左側翼位柱，當陣型散開後常成為賽末需要「精準單支 3 分」收尾 50 分的關鍵目標。',
+            4: '【編號 4 號柱｜分值：單支 4 分｜位置：第二排右側】右側翼位柱，適合用來補足 46 分差 4 分的精準收尾。',
+            5: '【編號 5 號柱｜分值：單支 5 分｜位置：第三排最左側】外圍中分柱，不易被誤撞，當需要 5 分時可從左側邊線直線狙擊。',
+            6: '【編號 6 號柱｜分值：單支 6 分｜位置：第三排最右側】外圍中分柱，適合作為中段穩健累分的目標。',
+            7: '【編號 7 號柱｜分值：單支 7 分｜位置：第四排最左側】後排高分角柱，前期受前排保護，需等陣型散開後再進行單點狙擊。',
+            8: '【編號 8 號柱｜分值：單支 8 分｜位置：第四排最右側】後排高分角柱，高報酬目標，適合距離 50 分還差 8 分時單點突破。',
+            9: '【編號 9 號柱｜分值：單支 9 分｜位置：第四排中央】最後排正中央高分柱，通常需要等前排被擊散後才能直接瞄準。',
+            10: '【編號 10 號柱｜分值：單支 10 分｜位置：第二排正中央】陣型核心樞紐！被 1、2、3、4 號緊密包圍，開局強力衝擊此區可一次擊倒大量木柱。',
+            11: '【編號 11 號柱｜分值：單支 11 分｜位置：第三排左中】超高分核心柱（11 分），賽局中段若被撞出至空曠處，是快速拉近 50 分距離的絕佳目標。',
+            12: '【編號 12 號柱｜分值：單支 12 分｜位置：第三排右中】全場最高分木柱（12 分）！單支擊倒即可獲得 12 分，也是賽末最容易導致「超過 50 分退回 25 分」的雙面刃。'
         };
 
         function inspectFormationPin(num) {
             const box = document.getElementById('formationPinDetailBox');
-            box.innerHTML = `<span class="font-black text-amberwood-700">🎯 戰術解析：</span>${FORMATION_TIPS[num] || ''}`;
+            box.innerHTML = `<span class="font-black text-vitalorange-700">🎯 木柱分值與戰術解析：</span>${FORMATION_TIPS[num] || ''}`;
         }
 
         // ==========================================
-        // 4. 體驗任務卡互動、Canvas 照片壓縮與紀錄牆
+        // 5. 體驗任務卡雙向同步、Canvas 照片壓縮與本機紀錄牆
         // ==========================================
         function toggleQuestCard(idx) {
             appState.questsDone[idx] = !appState.questsDone[idx];
@@ -1251,23 +1475,31 @@
                 if (formChk) formChk.checked = isDone;
 
                 if (isDone) {
-                    card.className = 'cursor-pointer rounded-2xl p-5 border-2 border-emerald-600 bg-emerald-50/80 transition flex flex-col justify-between select-none shadow-sm';
+                    card.className = 'cursor-pointer rounded-2xl p-5 border-2 border-emerald-600 bg-emerald-50/85 transition flex flex-col justify-between select-none shadow-sm';
                     check.className = 'w-7 h-7 rounded-full border-2 border-emerald-600 bg-emerald-600 text-white flex items-center justify-center text-sm font-black';
                     check.textContent = '✓';
                     statusTxt.className = 'mt-4 pt-3 border-t border-emerald-200 text-xs font-black text-emerald-700';
                     statusTxt.textContent = '✅ 已完成此項體驗任務';
                 } else {
-                    card.className = 'cursor-pointer rounded-2xl p-5 border-2 border-birch-300 bg-birch-50/70 hover:border-amberwood-500 transition flex flex-col justify-between select-none';
+                    card.className = 'cursor-pointer rounded-2xl p-5 border-2 border-birch-200 bg-birch-50 hover:border-vitalorange-500 transition flex flex-col justify-between select-none';
                     check.className = 'w-7 h-7 rounded-full border-2 border-slate-400 bg-white flex items-center justify-center text-sm font-black';
                     check.textContent = '';
-                    statusTxt.className = 'mt-4 pt-3 border-t border-birch-200 text-xs font-black text-amberwood-700';
+                    statusTxt.className = 'mt-4 pt-3 border-t border-birch-200 text-xs font-black text-vitalorange-700';
                     statusTxt.textContent = '⬜ 點擊卡片標記完成';
                 }
             });
 
             document.getElementById('questProgressBadge').textContent = `${doneCount} / 3`;
             document.getElementById('questProgressBar').style.width = `${Math.round((doneCount / 3) * 100)}%`;
-            document.getElementById('formQuestCountLabel').textContent = `已選 ${doneCount} 項`;
+            document.getElementById('formQuestCountLabel').textContent = `已選 ${doneCount} / 3 項`;
+        }
+
+        function appendReflectionPrompt(snippet) {
+            const textarea = document.getElementById('inputReflection');
+            const current = textarea.value.trim();
+            textarea.value = current ? `${current}\n${snippet}` : snippet;
+            textarea.focus();
+            updateReflectionCount();
         }
 
         function updateReflectionCount() {
@@ -1275,13 +1507,13 @@
             document.getElementById('reflectionCharCount').textContent = `${val.length} 字`;
         }
 
-        // HTML5 Canvas 圖片等比例縮放至寬度 800px，JPEG 品質 0.7
+        // HTML5 Canvas 自動等比例縮放至最大寬度 800px，JPEG 0.7 壓縮
         function handlePhotoFileSelect(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
             const hintEl = document.getElementById('photoUploadHint');
-            hintEl.textContent = '⏳ 正在進行 Canvas 圖片壓縮處理...';
+            hintEl.textContent = '⏳ 正在進行 Canvas 自動等比例壓縮...';
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -1305,7 +1537,7 @@
 
                     const sizeKB = Math.round((base64Data.length * 3) / 4 / 1024);
                     document.getElementById('photoPreviewImg').src = base64Data;
-                    document.getElementById('photoCompressInfo').textContent = `✓ 已自動壓縮至 ${w}×${h}px（約 ${sizeKB} KB）`;
+                    document.getElementById('photoCompressInfo').textContent = `✓ 已壓縮至 ${w}×${h}px（檔案大小約 ${sizeKB} KB）`;
                     document.getElementById('photoUploadArea').classList.add('hidden');
                     document.getElementById('photoPreviewBox').classList.remove('hidden');
                 };
@@ -1326,9 +1558,10 @@
         async function handleQuestFormSubmit(event) {
             event.preventDefault();
 
-            const studentName = document.getElementById('inputStudentName').value.trim();
+            const classDept = document.getElementById('inputClassDept').value.trim();
             const studentId = document.getElementById('inputStudentId').value.trim();
-            const classGroup = document.getElementById('inputClassGroup').value.trim();
+            const studentName = document.getElementById('inputStudentName').value.trim();
+            const teamGroup = document.getElementById('inputTeamGroup').value.trim();
             const reflection = document.getElementById('inputReflection').value.trim();
 
             const selectedQuests = QUEST_NAMES.filter((_, idx) => appState.questsDone[idx]);
@@ -1340,9 +1573,10 @@
                 id: Date.now(),
                 timestamp: nowStr,
                 recordType: '學生體驗任務',
-                studentName,
+                classDept,
                 studentId,
-                classGroup,
+                studentName,
+                teamGroup,
                 completedQuests: completedQuestsStr,
                 questRatio,
                 reflection,
@@ -1354,35 +1588,35 @@
             btn.disabled = true;
             btn.innerHTML = '<span>⏳ 正在儲存與同步中...</span>';
 
-            // 1. 存入 localStorage
+            // 1. 存入 localStorage 本機紀錄牆
             appState.studentRecords.unshift(newRecord);
             saveStudentRecordsToLocal();
             renderStudentRecordsWall();
 
-            // 2. 若有設定 Google Apps Script Web App URL，傳送至 Google Sheet
+            // 2. 若已設定 Google Apps Script URL 則自動 POST 上傳至 Google Sheet
             if (appState.gasWebAppUrl) {
                 const cloudResult = await sendJsonToGoogleSheet(newRecord);
                 if (cloudResult.ok) {
-                    statusMsg.textContent = `✅ [${nowStr}] 已儲存於本機並同步上傳至 Google Sheet！`;
+                    statusMsg.textContent = `✅ [${nowStr}] 已保存至本機紀錄牆並同步上傳至 Google Sheet！`;
                     statusMsg.className = 'text-xs sm:text-sm font-black text-emerald-700';
                     showToast('學生體驗紀錄與合照已成功上傳至 Google Sheet！', '🎉');
                 } else {
-                    statusMsg.textContent = `⚠️ 已儲存至本機紀錄牆，但雲端上傳失敗，請確認網路或 Web App 網址。`;
+                    statusMsg.textContent = `⚠️ 已保存至本機紀錄牆，但雲端上傳失敗，請檢查 Web App 網址。`;
                     statusMsg.className = 'text-xs sm:text-sm font-black text-amber-700';
                     showToast('已保存至本機紀錄牆，雲端連線異常', '⚠️');
                 }
             } else {
-                statusMsg.textContent = `💾 [${nowStr}] 已儲存至本機紀錄牆（尚未設定 Google Sheet 雲端網址）。`;
+                statusMsg.textContent = `💾 [${nowStr}] 已保存至本機紀錄牆（設定 Google Sheet 網址後可自動同步雲端）。`;
                 statusMsg.className = 'text-xs sm:text-sm font-bold text-forest-700';
-                showToast('已儲存至本機體驗紀錄牆！如需同步雲端請設定 Sheet 網址', '💾');
+                showToast('已保存至本機體驗紀錄牆！', '💾');
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<span>☁️ 提交體驗紀錄與合照</span>';
+            btn.innerHTML = '<span>☁️ 提交完成紀錄與合照</span>';
 
-            // 清空個人輸入欄位（保留班級/組別方便同班同學連續填寫）
-            document.getElementById('inputStudentName').value = '';
+            // 清空個人輸入欄位（保留班級/系級與組別方便同組連續提交）
             document.getElementById('inputStudentId').value = '';
+            document.getElementById('inputStudentName').value = '';
             document.getElementById('inputReflection').value = '';
             updateReflectionCount();
             clearSelectedPhoto();
@@ -1392,7 +1626,6 @@
             try {
                 localStorage.setItem(STORAGE_KEYS.STUDENT_RECORDS, JSON.stringify(appState.studentRecords));
             } catch (e) {
-                // 若照片過多超過 localStorage 限制，將最舊紀錄的照片移除後重試
                 for (let i = appState.studentRecords.length - 1; i >= 1; i--) {
                     if (appState.studentRecords[i].photoBase64) {
                         appState.studentRecords[i].photoBase64 = '';
@@ -1405,6 +1638,13 @@
             }
         }
 
+        function deleteSingleStudentRecord(recordId) {
+            appState.studentRecords = appState.studentRecords.filter(r => r.id !== recordId);
+            saveStudentRecordsToLocal();
+            renderStudentRecordsWall();
+            showToast('已刪除該筆本機紀錄', '🗑️');
+        }
+
         function renderStudentRecordsWall() {
             const wall = document.getElementById('studentRecordsWall');
             const badge = document.getElementById('localRecordsCountBadge');
@@ -1413,32 +1653,36 @@
             if (appState.studentRecords.length === 0) {
                 wall.innerHTML = `
                     <div class="col-span-full text-center py-8 text-sm text-slate-400 bg-birch-50 rounded-2xl border border-dashed border-birch-300">
-                        目前尚無已提交的學生體驗紀錄，完成任務後請填寫上方表單上傳吧！
+                        目前尚無本機體驗紀錄，完成體驗任務後請填寫上方表單提交吧！
                     </div>
                 `;
                 return;
             }
 
             wall.innerHTML = appState.studentRecords.map(rec => `
-                <article class="rounded-2xl bg-birch-50 border border-birch-300 overflow-hidden flex flex-col justify-between shadow-sm">
+                <article class="rounded-2xl bg-birch-50 border border-birch-200 overflow-hidden flex flex-col justify-between shadow-sm">
                     ${rec.photoBase64
-                        ? `<img src="${rec.photoBase64}" alt="${escapeHtml(rec.studentName)}合照" class="w-full h-44 object-cover border-b border-birch-200">`
-                        : `<div class="w-full h-24 bg-forest-50 border-b border-birch-200 flex items-center justify-center text-xs font-bold text-forest-700">🪵 無附加體驗合照</div>`
+                        ? `<img src="${rec.photoBase64}" alt="${escapeHtml(rec.studentName)}體驗合照" class="w-full h-44 object-cover border-b border-birch-200">`
+                        : `<div class="w-full h-24 bg-forest-50 border-b border-birch-200 flex items-center justify-center text-xs font-bold text-forest-700">🪵 未附加體驗合照</div>`
                     }
                     <div class="p-4 space-y-2 flex-1 flex flex-col justify-between">
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="px-2 py-0.5 rounded-md bg-forest-700 text-white text-[11px] font-black">${escapeHtml(rec.classGroup)}</span>
-                                <span class="px-2 py-0.5 rounded-md bg-amberwood-600 text-white text-[11px] font-black">任務 ${escapeHtml(rec.questRatio)}</span>
+                                <span class="px-2 py-0.5 rounded-md bg-forest-600 text-white text-[11px] font-black">${escapeHtml(rec.classDept)} • ${escapeHtml(rec.teamGroup)}</span>
+                                <span class="px-2 py-0.5 rounded-md bg-vitalorange-600 text-white text-[11px] font-black font-mono-num">${escapeHtml(rec.questRatio)}</span>
                             </div>
-                            <h5 class="font-black text-forest-900 text-base">${escapeHtml(rec.studentName)} <span class="text-xs font-bold text-slate-500">(${escapeHtml(rec.studentId)})</span></h5>
+                            <h5 class="font-black text-forest-800 text-base">${escapeHtml(rec.studentName)} <span class="text-xs font-bold text-slate-500 font-mono-num">(${escapeHtml(rec.studentId)})</span></h5>
                             <div class="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
                                 ✓ ${escapeHtml(rec.completedQuests)}
                             </div>
-                            <p class="text-xs text-slate-700 leading-relaxed pt-1">「${escapeHtml(rec.reflection)}」</p>
+                            <p class="text-xs text-slate-700 leading-relaxed pt-1 whitespace-pre-line">「${escapeHtml(rec.reflection)}」</p>
                         </div>
-                        <div class="pt-2 mt-2 border-t border-birch-200 text-[10px] text-slate-400">
-                            提交時間：${escapeHtml(rec.timestamp)}
+                        <div class="pt-2 mt-2 border-t border-birch-200 flex items-center justify-between text-[10px] text-slate-400">
+                            <span>${escapeHtml(rec.timestamp)}</span>
+                            <button type="button" onclick="deleteSingleStudentRecord(${rec.id})"
+                                class="px-2 py-0.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold transition">
+                                刪除單筆
+                            </button>
                         </div>
                     </div>
                 </article>
@@ -1450,12 +1694,12 @@
                 showToast('目前沒有可匯出的學生紀錄', '⚠️');
                 return;
             }
-            const headers = ['時間戳記', '學生姓名', '學號', '班級組別', '完成任務清單', '完成數量', '心得與反思'];
+            const headers = ['時間戳記', '班級系級', '學號', '姓名', '組別隊名', '完成體驗任務清單', '完成數量', '學習心得與反思'];
             const rows = appState.studentRecords.map(r => [
-                r.timestamp, r.studentName, r.studentId, r.classGroup, r.completedQuests, r.questRatio, r.reflection
+                r.timestamp, r.classDept, r.studentId, r.studentName, r.teamGroup, r.completedQuests, r.questRatio, r.reflection
             ]);
-            triggerCsvDownload(`芬蘭撞柱_學生體驗任務紀錄_${getTimestampSlug()}.csv`, headers, rows);
-            showToast('已匯出學生體驗紀錄 CSV 檔案', '📥');
+            triggerCsvDownload(`芬蘭撞柱_大學生體驗任務紀錄_${getTimestampSlug()}.csv`, headers, rows);
+            showToast('已匯出學生紀錄 CSV 檔案', '📥');
         }
 
         function clearAllStudentRecords() {
@@ -1465,11 +1709,11 @@
                 localStorage.removeItem(STORAGE_KEYS.STUDENT_RECORDS);
             } catch (e) {}
             renderStudentRecordsWall();
-            showToast('已清除本機體驗紀錄牆資料', '🗑️');
+            showToast('已清空本機體驗紀錄牆資料', '🗑️');
         }
 
         // ==========================================
-        // 5. Google Sheet 雲端連動設定精靈
+        // 6. Google Sheet 雲端連動設定精靈
         // ==========================================
         function openSheetModal() {
             document.getElementById('inputGasUrl').value = appState.gasWebAppUrl || '';
@@ -1590,7 +1834,7 @@
         }
 
         // ==========================================
-        // 6. 即時比賽計分引擎（HKMDA 2023 官方規則）
+        // 7. 即時比賽計分引擎（HKMDA 2023 官方規則）
         // ==========================================
         function cloneStateForUndo() {
             return JSON.stringify({
@@ -1626,12 +1870,12 @@
             const grid = document.getElementById('teamConfigGrid');
             const activeTeams = appState.teams.slice(0, appState.teamCount);
             grid.innerHTML = activeTeams.map((t, idx) => `
-                <div class="bg-birch-50 rounded-2xl p-3 border border-birch-300 space-y-2">
+                <div class="bg-birch-50 rounded-2xl p-3 border border-birch-200 space-y-2">
                     <div class="text-xs font-black text-forest-800">第 ${idx + 1} 順位隊伍設定</div>
                     <input type="text" value="${escapeHtml(t.name)}" oninput="updateTeamMeta(${idx}, 'name', this.value)"
-                        placeholder="隊伍名稱" class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-birch-300 text-xs font-black">
+                        placeholder="隊伍名稱" class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-birch-200 text-xs font-black">
                     <input type="text" value="${escapeHtml(t.members)}" oninput="updateTeamMeta(${idx}, 'members', this.value)"
-                        placeholder="隊員姓名（選填）" class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-birch-300 text-xs">
+                        placeholder="隊員名稱（選填）" class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-birch-200 text-xs">
                 </div>
             `).join('');
         }
@@ -1644,12 +1888,12 @@
             const panelKeypad = document.getElementById('panelModeKeypad');
 
             if (mode === 'pins') {
-                btnPins.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-forest-800 text-white shadow transition';
+                btnPins.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-forest-600 text-white shadow transition';
                 btnKeypad.className = 'px-3 py-1.5 rounded-lg text-xs font-black text-forest-800 hover:bg-birch-200 transition';
                 panelPins.classList.remove('hidden');
                 panelKeypad.classList.add('hidden');
             } else {
-                btnKeypad.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-forest-800 text-white shadow transition';
+                btnKeypad.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-forest-600 text-white shadow transition';
                 btnPins.className = 'px-3 py-1.5 rounded-lg text-xs font-black text-forest-800 hover:bg-birch-200 transition';
                 panelKeypad.classList.remove('hidden');
                 panelPins.classList.add('hidden');
@@ -1663,7 +1907,7 @@
                 const isSelected = appState.selectedPins.includes(n);
                 html += `
                     <button type="button" onclick="togglePinSelection(${n})"
-                        class="molkky-pin ${isSelected ? 'selected' : ''} w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 flex items-center justify-center">
+                        class="molkky-pin ${isSelected ? 'selected' : ''} w-12 h-12 sm:w-14 sm:h-14 rounded-full font-black text-lg text-forest-900 flex items-center justify-center font-mono-num">
                         ${n}
                     </button>
                 `;
@@ -1738,11 +1982,10 @@
 
         function recordThrowScore(points, detailText, isFoul = false) {
             if (appState.setFinished) {
-                showToast('本局已分出勝負，請點擊「新開一局」或「重置整場比賽」', '⚠️');
+                showToast('本局已分出勝負，請點擊「新開一局」或「重設比賽」', '⚠️');
                 return;
             }
 
-            // 保存復原點
             appState.undoStack.push(cloneStateForUndo());
 
             const team = appState.teams[appState.activeTeamIdx];
@@ -1753,7 +1996,6 @@
             if (points === 0) {
                 team.misses += 1;
                 if (team.misses >= 3) {
-                    // 官方規則：連續 3 次 0 分出局
                     team.eliminated = true;
                     if (team.score > 25) {
                         team.score = 25;
@@ -1761,7 +2003,6 @@
                     eventNote += ' ➔ 連續 3 次 0 分該局出局！';
                     speakText(`${team.name} 連續三次零分，本局出局`);
 
-                    // 檢查是否僅剩一隊未出局
                     const activeTeams = appState.teams.slice(0, appState.teamCount);
                     const survivors = activeTeams
                         .map((t, idx) => ({ t, idx }))
@@ -1798,7 +2039,6 @@
                 }
             }
 
-            // 寫入逐回合歷史紀錄
             appState.history.unshift({
                 set: appState.currentSet,
                 round: appState.currentRound,
@@ -1808,7 +2048,6 @@
                 note: eventNote
             });
 
-            // 判斷是否結束本局
             if (setWinnerIdx !== -1) {
                 finalizeSetVictory(setWinnerIdx);
             } else {
@@ -1850,14 +2089,13 @@
 
             banner.classList.remove('hidden');
 
-            // 檢查是否達成賽制總冠軍條件
             let matchOver = false;
             let championName = winner.name;
             let summaryDesc = `第 ${appState.currentSet} 局由 ${winner.name} 以 ${winner.score} 分勝出！`;
 
             if (appState.matchFormat === 'single') {
                 matchOver = true;
-                summaryDesc = `單局體驗賽結束，由 ${winner.name} 率先精準達成 50 分奪冠！`;
+                summaryDesc = `單局練習賽結束，由 ${winner.name} 率先精準達成 50 分奪冠！`;
             } else if (appState.matchFormat === 'bo3' && winner.setsWon >= 2) {
                 matchOver = true;
                 summaryDesc = `三局兩勝制賽程結束，${winner.name} 率先拿下 2 局成為全場總冠軍！`;
@@ -1900,7 +2138,6 @@
             appState.currentSet += 1;
             appState.currentRound = 1;
             appState.setFinished = false;
-            // 官方規則：第二局由上一局後手方先開始
             appState.activeTeamIdx = (appState.currentSet - 1) % appState.teamCount;
             appState.selectedPins = [];
             appState.teams.forEach(t => {
@@ -1948,7 +2185,7 @@
             document.getElementById('matchWinnerBanner').classList.add('hidden');
             renderInteractivePinGrid();
             renderScoreboardUI();
-            showToast('已重置整場比賽所有分數與紀錄', '🗑️');
+            showToast('已重設整場比賽所有分數與紀錄', '🗑️');
         }
 
         function undoLastAction() {
@@ -1980,52 +2217,53 @@
             document.getElementById('consoleTeamTitle').textContent = currentTeam.name;
             document.getElementById('btnUndo').disabled = appState.undoStack.length === 0;
 
-            // 1. 渲染各隊分數卡
+            // 1. 渲染各隊即時計分板
             const cardsGrid = document.getElementById('scoreboardCardsGrid');
             cardsGrid.innerHTML = activeTeams.map((t, idx) => {
                 const isTurn = !appState.setFinished && idx === appState.activeTeamIdx;
                 const remain = 50 - t.score;
                 const isListening = !t.eliminated && remain > 0 && remain <= 12;
+                const cumulativePts = t.setScores.reduce((acc, v) => acc + (v || 0), 0) + (!appState.setFinished ? t.score : 0);
 
-                // 連續 0 分警示燈（●○○ / ●●○ / 出局）
+                // 連續 0 分次數指示燈（3 顆警示燈）
                 let missLightsHtml = '';
                 for (let m = 1; m <= 3; m++) {
                     const lit = t.misses >= m;
-                    missLightsHtml += `<span class="inline-block w-3 h-3 rounded-full ${lit ? 'bg-rose-600' : 'bg-slate-200 border border-slate-300'}"></span>`;
+                    missLightsHtml += `<span class="inline-block w-3 h-3 rounded-full ${lit ? 'bg-rose-600 ring-2 ring-rose-300' : 'bg-slate-200 border border-slate-300'}"></span>`;
                 }
 
                 return `
                     <div class="rounded-3xl p-5 transition relative ${
                         isTurn
-                            ? 'bg-forest-800 text-white shadow-xl ring-4 ring-amberwood-500'
+                            ? 'bg-forest-800 text-white shadow-xl ring-4 ring-vitalorange-500'
                             : 'bg-white text-slate-800 shadow-md border-2 border-birch-200'
                     }">
                         <div class="flex items-center justify-between gap-2">
                             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black ${
-                                isTurn ? 'bg-amberwood-500 text-forest-900' : 'bg-birch-100 text-forest-800'
+                                isTurn ? 'bg-vitalorange-600 text-white' : 'bg-birch-100 text-forest-800'
                             }">
                                 ${isTurn ? '🎯 投擲中' : `第 ${idx + 1} 順位`}
                             </span>
-                            <span class="text-xs font-bold ${isTurn ? 'text-birch-200' : 'text-slate-500'}">勝局：${t.setsWon}</span>
+                            <span class="text-xs font-bold font-mono-num ${isTurn ? 'text-birch-100' : 'text-slate-500'}">勝 ${t.setsWon} 局 / 總 ${cumulativePts} 分</span>
                         </div>
 
-                        <h4 class="text-lg font-black mt-2 truncate">${escapeHtml(t.name)}</h4>
+                        <h3 class="text-lg font-black mt-2 truncate">${escapeHtml(t.name)}</h3>
                         <p class="text-xs truncate ${isTurn ? 'text-birch-200' : 'text-slate-500'}">${escapeHtml(t.members || '未填寫隊員')}</p>
 
                         <div class="my-3 flex items-baseline justify-between">
-                            <div class="text-5xl font-black tracking-tight ${isTurn ? 'text-amberwood-400' : 'text-forest-800'}">
+                            <div class="text-5xl font-black tracking-tight font-mono-num ${isTurn ? 'text-birch-300' : 'text-forest-800'}">
                                 ${t.score}<span class="text-base font-bold opacity-70"> / 50</span>
                             </div>
                             ${t.eliminated
                                 ? `<span class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-black">本局出局</span>`
                                 : isListening
-                                    ? `<span class="px-2.5 py-1 rounded-lg bg-amberwood-500 text-forest-900 text-xs font-black animate-pulse">🔥 聽牌差 ${remain} 分</span>`
-                                    : `<span class="text-xs font-bold ${isTurn ? 'text-birch-200' : 'text-slate-500'}">還差 ${remain} 分</span>`
+                                    ? `<span class="px-2.5 py-1 rounded-lg bg-vitalorange-600 text-white text-xs font-black animate-pulse">🔥 聽牌差 ${remain} 分</span>`
+                                    : `<span class="text-xs font-bold font-mono-num ${isTurn ? 'text-birch-100' : 'text-slate-500'}">距離 50 分還差 ${remain} 分</span>`
                             }
                         </div>
 
                         <div class="pt-2.5 border-t ${isTurn ? 'border-forest-600' : 'border-birch-200'} flex items-center justify-between text-xs">
-                            <span class="font-bold ${isTurn ? 'text-birch-100' : 'text-slate-600'}">連續 0 分警示：</span>
+                            <span class="font-bold ${isTurn ? 'text-birch-100' : 'text-slate-600'}">連續 0 分警示（${t.misses}/3）：</span>
                             <div class="flex items-center gap-1.5" title="連續 3 次 0 分將判定該局出局">
                                 ${missLightsHtml}
                             </div>
@@ -2034,7 +2272,7 @@
                 `;
             }).join('');
 
-            // 2. 渲染多局總積分統計表
+            // 2. 渲染局數與總積分統計表
             const tbody = document.getElementById('setSummaryBody');
             tbody.innerHTML = activeTeams.map(t => {
                 const s1 = t.setScores[0] !== undefined ? t.setScores[0] : (appState.currentSet === 1 ? t.score : '-');
@@ -2042,8 +2280,8 @@
                 const totalPts = t.setScores.reduce((acc, v) => acc + (v || 0), 0) + (!appState.setFinished ? t.score : 0);
                 return `
                     <tr>
-                        <td class="py-2 pr-2 text-forest-800">${escapeHtml(t.name)}</td>
-                        <td class="py-2 px-2 text-center text-amberwood-700">${t.setsWon}</td>
+                        <td class="py-2 pr-2 text-forest-800 font-sans">${escapeHtml(t.name)}</td>
+                        <td class="py-2 px-2 text-center text-vitalorange-600">${t.setsWon}</td>
                         <td class="py-2 px-2 text-center">${s1}</td>
                         <td class="py-2 px-2 text-center">${s2}</td>
                         <td class="py-2 pl-2 text-right font-black text-forest-900">${totalPts} 分</td>
@@ -2051,7 +2289,7 @@
                 `;
             }).join('');
 
-            // 3. 渲染逐回合歷史紀錄
+            // 3. 渲染本局逐回合紀錄
             const histList = document.getElementById('throwHistoryList');
             document.getElementById('historyCountTag').textContent = `${appState.history.length} 筆紀錄`;
             if (appState.history.length === 0) {
@@ -2063,7 +2301,7 @@
                             <span class="font-black text-forest-800">[第${item.set}局 R${item.round}] ${escapeHtml(item.teamName)}</span>
                             <div class="text-slate-600 mt-0.5">${escapeHtml(item.note)}</div>
                         </div>
-                        <div class="text-right shrink-0">
+                        <div class="text-right shrink-0 font-mono-num">
                             <span class="px-2 py-0.5 rounded-md font-black ${item.points === 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-800'}">
                                 +${item.points} 分
                             </span>
@@ -2077,11 +2315,11 @@
         }
 
         // ==========================================
-        // 7. 比賽成績上傳 Google Sheet & CSV 匯出
+        // 8. 比賽成績上傳 Google Sheet & CSV 匯出
         // ==========================================
         function buildMatchSummaryPayload() {
             const formatMap = {
-                single: '單局體驗賽',
+                single: '單局練習賽',
                 bo3: '三局兩勝制',
                 twoSetTotal: '兩局總得分制'
             };
@@ -2148,11 +2386,11 @@
                 p.teamsDetail, p.setScoresDetail, p.totalSummary, p.winnerName
             ]];
             triggerCsvDownload(`芬蘭撞柱_比賽成績紀錄_${getTimestampSlug()}.csv`, headers, rows);
-            showToast('已匯出本場比賽成績 CSV 檔案', '📥');
+            showToast('已匯出比賽 CSV 檔案', '📥');
         }
 
         // ==========================================
-        // 8. Penalty Throw (4米柱 PK 戰) 互動邏輯
+        // 9. 和局 PT 戰（4 米柱 PK）計分器 Modal 邏輯
         // ==========================================
         function openPtModal() {
             document.getElementById('ptTeamName0').textContent = appState.teams[0].name;
@@ -2204,7 +2442,7 @@
         }
 
         // ==========================================
-        // 9. 通用輔助函式與初始化
+        // 10. 通用輔助函式與初始化
         // ==========================================
         function escapeHtml(str) {
             return String(str ?? '')
@@ -2240,7 +2478,6 @@
         }
 
         function initApplication() {
-            // 載入 localStorage 設定與紀錄
             try {
                 appState.gasWebAppUrl = localStorage.getItem(STORAGE_KEYS.GAS_URL) || '';
                 const savedRecs = localStorage.getItem(STORAGE_KEYS.STUDENT_RECORDS);
@@ -2251,6 +2488,7 @@
                 appState.studentRecords = [];
             }
 
+            switchTab('intro');
             selectAdaptiveTab('distance');
             updateQuestCardsAndFormUI();
             updateCloudStatusIndicators();
